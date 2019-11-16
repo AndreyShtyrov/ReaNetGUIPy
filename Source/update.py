@@ -1,3 +1,4 @@
+import logging
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -17,16 +18,19 @@ class MainWidget(Widget):
         self._components = []
         self._bubblmenu = None
         self._update_per_move = []
+        self.log = logging.getLogger("MainWindow")
 
     def what_was_clicked(self, touch):
         for component in self._components:
             if bool(component.check_click(touch)):
+                print(str(component))
                 return component
         return None
 
     def new_comp(self, touch):
-        new_sub = MolFrame(self, x=touch.pos[0], y=touch.pos[1])
+        new_sub = MolFrame(x=touch.pos[0], y=touch.pos[1])
         self.add_component(new_sub)
+        self.add_widget(new_sub)
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):

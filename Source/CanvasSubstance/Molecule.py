@@ -35,16 +35,16 @@ class ellipse_box(FloatLayout):
         else:
             print("none")
 
-class MolFrame():
-    def __init__(self, parentWidget, **kwargs):
-
+class MolFrame(FloatLayout):
+    def __init__(self, **kwargs):
+        super(FloatLayout, self).__init__(width=120, height=30, pos=(kwargs["x"], kwargs["y"]))
         self._x = kwargs["x"]
         self._y = kwargs["y"]
         self._wight = 120
         self._height = 70
         self._mark_visible = False
         self._list_bonds = []
-        self._parent: Widget = parentWidget
+        # self._parent: Widget = parentWidget
         self.Name: TextInput = TextInput(text="New Substance", width=120, height=30, pos=(self._x, self._y), multiline=False,
                               size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
                               foreground_color=(1, 1, 1, 1))
@@ -52,16 +52,17 @@ class MolFrame():
         self.Energy: TextInput = TextInput(text=str(0.0),  width=120, height=30, multiline=False, pos=(self._x, self._y + 30),
                               size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
                               foreground_color=(1, 1, 1, 1))
-        self.rellipse: Ellipse = ellipse_box(self._x - 10, self._y + 20)
-        self.lellipse: Ellipse = ellipse_box(self._x + self._wight + 10, self._y + 20)
+        # self.rellipse: Ellipse = ellipse_box(self._x - 10, self._y + 20)
+        # self.lellipse: Ellipse = ellipse_box(self._x + self._wight + 10, self._y + 20)
+        self.add_widget(self.Name)
+        self.add_widget(self.Energy)
+        # self._parent.add_widget(self.Name)
+        # self._parent.add_widget(self.Energy)
 
-        self._parent.add_widget(self.Name)
-        self._parent.add_widget(self.Energy)
 
-
-    def remove_widget(self):
-        self._parent.remove_widget(self.Name)
-        self._parent.remove_widget(self.Energy)
+    # def remove_widget(self):
+    #     self._parent.remove_widget(self.Name)
+    #     self._parent.remove_widget(self.Energy)
 
     def check_click(self, touch):
         res, _ = self.check_click_name(touch.pos)
@@ -113,11 +114,14 @@ class MolFrame():
 
 
 
+
+
     def move(self, touch):
-        self.Name.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2)
-        self.Energy.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2 + 30)
-        self._x = touch.pos[0] - self._wight / 2
-        self._y = touch.pos[1] - self._height / 2
+        self.pos = (touch.pos[0], touch.pos[1])
+        # self.Name.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2)
+        # self.Energy.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2 + 30)
+        self._x = touch.pos[0]
+        self._y = touch.pos[1]
 
 
 class MyApp(App):
