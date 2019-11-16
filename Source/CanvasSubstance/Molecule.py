@@ -9,12 +9,14 @@ from kivy.uix.textinput import TextInput
 from functools import partial
 from kivy.graphics import Ellipse
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
-class ellipse_box(Widget):
+class ellipse_box(FloatLayout):
 
-    def __init__(self, pos, parent):
-        super(Widget, self).__init__(height=30, width = 30, pos=pos)
-        self.ellipse: Ellipse = Ellipse(pos=(self._x-self._wight/2,self.y-self._height/2+30))
+    def __init__(self, pos, size, parent):
+        super(FloatLayout, self).__init__(pos=pos)
+
+        self.ellipse: Ellipse = Ellipse(pos=(pos[0]-self._wight/2, pos[1]-self._height/2+30), size=size)
         self._parent = parent
 
 
@@ -30,6 +32,8 @@ class MolFrame():
         self._y = 100
         self._wight = 120
         self._height = 70
+        self._mark_visible = False
+        self._list_bonds = []
         self._parent: Widget = parentWidget
         self.Name: TextInput = TextInput(text="New Substance", width=120, height=30, pos=(self._x, self._y), multiline=False,
                               size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
@@ -38,26 +42,44 @@ class MolFrame():
         self.Energy: TextInput = TextInput(text=str(0.0),  width=120, height=30, multiline=False, pos=(self._x, self._y + 30),
                               size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
                               foreground_color=(1, 1, 1, 1))
-        # self.rellipse: ellipse_box = ellipse_box(pos=(self._x-self._wight/2,self.y-self._height/2+30))
-        # self.lellipse: ellipse_box = ellipse_box(pos=(self._y + self._wight/2, self._y - self._height/2 + 30))
+        self.rellipse: Ellipse = Ellipse(pos=(self._x-self._wight/2,self._y-self._height/2+30), size=(15, 15)
+                                                 )
+        self.lellipse: Ellipse = Ellipse(pos=(self._y + self._wight/2, self._y - self._height/2 + 30), size=(15, 15)
+                                                 )
 
         self._parent.add_widget(self.Name)
         self._parent.add_widget(self.Energy)
 
+
+    def remove_widget(self):
+        self._parent.remove_widget(self.Name)
+        self._parent.remove_widget(self.Energy)
 
     def check_click(self, touch):
         res, _ = self.check_click_name(touch.pos)
         return res
 
     def on_touch_down(self, touch):
-        # if self.lellipse.collide_point(touch.pos[0], touch.pos[1]):
-        #     pass
-        # if self.rellipse.collide_point(touch.pos[0], touch.pos[1]):
-            pass
+        if self._mark_visible:
+            if self.lellipse.collide_point(touch.pos[0], touch.pos[1]):
+                self.lellipse.col=(1, 0, 0, 0)
+                self._parent.createbond(self, "left")
+            if self.rellipse.collide_point(touch.pos[0], touch.pos[1]):
+                self.lellipse.col = (1, 0, 0, 0)
+                self._parent.createbond(self, "right")
 
-    def menu_add_bonds(self):
+
+
+    def hide_marks(self):
+        self._mark_visible = False
+        self._parent.remove_widget(self.lellipse)
+        self._parent.remove_widget(self.rellipse)
+
+    def show_bonds_marks(self):
+        self._mark_visible = True
         self._parent.add_widget(self.lellipse)
         self._parent.add_widget(self.rellipse)
+        Clock.schedule_once(self.hide_marks, 80)
 
 
     def get_specific_methods(self):
