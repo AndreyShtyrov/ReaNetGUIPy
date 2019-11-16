@@ -1,0 +1,28 @@
+from Source.CanvasSubstance.Molecule import MolFrame
+from kivy.app import App
+from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
+        BooleanProperty
+from kivy.uix.floatlayout import FloatLayout
+from kivy.lang import Builder
+from kivy.clock import Clock
+from math import cos, sin
+from kivy.graphics import Line
+
+class bond_line:
+
+    def __init__(self, subs1, subs2):
+        self._subs1: MolFrame = subs1
+        self._subs2: MolFrame = subs2
+        self._colore = (0,0,0,1)
+        self._points = [subs1._x, subs1._y, subs2._x, subs2._y]
+        self.line: Line = Line(self._points)
+
+
+
+    def create_bond(self):
+        pass
+
+    def update(self):
+        pass
+
+
