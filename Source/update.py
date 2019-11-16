@@ -24,8 +24,8 @@ class MainWidget(Widget):
                 return component
         return None
 
-    def new_comp(self):
-        new_sub = MolFrame(self)
+    def new_comp(self, touch):
+        new_sub = MolFrame(self, x=touch.pos[0], y=touch.pos[1])
         self.add_component(new_sub)
 
     def on_touch_down(self, touch):
@@ -38,7 +38,8 @@ class MainWidget(Widget):
                 clicked_obj = self.what_was_clicked(touch)
                 if clicked_obj is None:
                     clicked_obj = "MainWindow"
-                    menu = MainMenu(touch.pos, clicked_obj=clicked_obj, new=self.new_comp)
+                    new_comp = decor_functions(self.new_comp, touch)
+                    menu = MainMenu(touch.pos, clicked_obj=clicked_obj, new=new_comp)
                 else:
                     clicked_obj_name = type(clicked_obj).__name__
                     newbond = decor_functions(self.newBond, clicked_obj)
@@ -79,8 +80,8 @@ class MainWidget(Widget):
         self._update_per_move.append(bond_pred)
         self.canvas.add(bond_pred)
 
-    def newBond(self, clicked_obj):
-        pass
+    def newBond(self, clicked_obj: MolFrame):
+        clicked_obj.show_bonds_marks()
 
     def delFrame(self, clicked_obj):
         ind = self._components.remove(clicked_obj)
@@ -88,9 +89,10 @@ class MainWidget(Widget):
         del(clicked_obj)
 
     def copyFrame(self, clicked_ojb):
-        new_el = clicked_ojb.copy()
-        self.add_component(new_el)
-        self.add_widget(new_el)
+        pass
+        # new_el = clicked_ojb.copy()
+        # self.add_component(new_el)
+        # self.add_widget(new_el)
 
     def update_touch_label(self, label, touch):
         label.text = 'ID: %s\nPos: (%d, %d)\nClass: %s' % (

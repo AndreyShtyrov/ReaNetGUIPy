@@ -8,16 +8,19 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from functools import partial
 from kivy.graphics import Ellipse
+from kivy.graphics import Color
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 
 class ellipse_box(FloatLayout):
 
-    def __init__(self, pos, size, parent):
-        super(FloatLayout, self).__init__(pos=pos)
+    def __init__(self, x, y):
+        super(FloatLayout, self).__init__(width=10, height=10, pos=(x, y))
 
-        self.ellipse: Ellipse = Ellipse(pos=(pos[0]-self._wight/2, pos[1]-self._height/2+30), size=size)
-        self._parent = parent
+        with self.canvas:
+            Color(0.6, 0.6, 0.6, mode='hsv')
+            self.ellipse: Ellipse = Ellipse(pos=((x, y)), size=(10, 10), Color=(1, 1, 1))
+
 
 
     def make_visible(self):
@@ -26,10 +29,17 @@ class ellipse_box(FloatLayout):
     def hide(self):
         self._parent.remove_widget(self)
 
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.pos[0], touch.pos[1]):
+            print("touched")
+        else:
+            print("none")
+
 class MolFrame():
     def __init__(self, parentWidget, **kwargs):
-        self._x = 50
-        self._y = 100
+
+        self._x = kwargs["x"]
+        self._y = kwargs["y"]
         self._wight = 120
         self._height = 70
         self._mark_visible = False
@@ -42,10 +52,8 @@ class MolFrame():
         self.Energy: TextInput = TextInput(text=str(0.0),  width=120, height=30, multiline=False, pos=(self._x, self._y + 30),
                               size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
                               foreground_color=(1, 1, 1, 1))
-        self.rellipse: Ellipse = Ellipse(pos=(self._x-self._wight/2,self._y-self._height/2+30), size=(15, 15)
-                                                 )
-        self.lellipse: Ellipse = Ellipse(pos=(self._y + self._wight/2, self._y - self._height/2 + 30), size=(15, 15)
-                                                 )
+        self.rellipse: Ellipse = ellipse_box(self._x - 10, self._y + 20)
+        self.lellipse: Ellipse = ellipse_box(self._x + self._wight + 10, self._y + 20)
 
         self._parent.add_widget(self.Name)
         self._parent.add_widget(self.Energy)
@@ -110,3 +118,17 @@ class MolFrame():
         self.Energy.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2 + 30)
         self._x = touch.pos[0] - self._wight / 2
         self._y = touch.pos[1] - self._height / 2
+
+
+class MyApp(App):
+
+
+    def build(self):
+        root = Widget()
+        t_ellips = ellipse_box(200, 200)
+
+        root.add_widget(t_ellips)
+        return root
+
+if __name__ == '__main__':
+    MyApp().run()
