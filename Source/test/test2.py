@@ -17,34 +17,36 @@ from kivy.graphics import Line
 class test_widget(RelativeLayout):
 
     def __init__(self, **kwargs):
-        super(RelativeLayout, self).__init__(width=220, height=80)
-        with self.canvas:
-            self.Name: TextInput = TextInput(text="New Substance", multiline=False,
-                                  background_color=(0, 0, 0, 0),
-                                  foreground_color=(1, 1, 1, 1))
+        super(RelativeLayout, self).__init__(size_hint=(None, None), width=220, height=80, pos=(200,200))
 
-            self.Energy: TextInput = TextInput(text=str(0.0), multiline=False,
-                                   background_color=(0, 0, 0, 0), pos=(0, 30),
-                                  foreground_color=(1, 1, 1, 1))
+        self.Name: TextInput = TextInput(text="New Substance", multiline=False,
+                              background_color=(0, 0, 0, 0),
+                              foreground_color=(1, 1, 1, 1), pos=(0, 30))
 
-class dWidget(Widget):
+        self.Energy: TextInput = TextInput(text=str(0.0), multiline=False,
+                               background_color=(0, 0, 0, 0),
+                              foreground_color=(1, 1, 1, 1))
+        self.add_widget(self.Name)
+        self.add_widget(self.Energy)
 
     def on_touch_up(self, touch):
-        tt = test_widget()
-        self.add_widget(tt)
+        if self.collide_point(touch.pos[0], touch.pos[1]):
+            print("touched")
+        else:
+            print("None")
+
+class dWidget(BoxLayout):
+    pass
+
 
 
 class MyApp(App):
-
-
     def build(self):
-        wid = dWidget()
-        gmenu = menu
-        root = BoxLayout(orientation='vertical')
-        layout = BoxLayout(size_hint=(1, None), height=50)
-        layout.add_widget(gmenu)
-        root.add_widget(layout)
-        root.add_widget(wid)
+        root = FloatLayout()
+        b1 = Button(pos_hint={'x': 0, 'center_y': .6})
+        b2 = Button(pos_hint={'right': 1, 'center_y': .3})
+        root.add_widget(b1)
+        root.add_widget(b2)
         return root
 
 

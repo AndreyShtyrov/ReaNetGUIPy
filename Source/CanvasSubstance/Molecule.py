@@ -1,8 +1,6 @@
 from kivy.app import App
-from kivy.graphics import Rectangle
-from kivy.graphics import Color
-from  kivy.uix.scatter import Scatter
-from kivy.uix.relativelayout import RelativeLayout
+from kivy.graphics import Color, Rectangle, Canvas, ClearBuffers, ClearColor
+from kivy.graphics.fbo import Fbo
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
@@ -35,17 +33,23 @@ class ellipse_box(FloatLayout):
         else:
             print("none")
 
-class MolFrame(Scatter):
+class MolFrame(FloatLayout):
     def __init__(self, **kwargs):
-        super().__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]), do_rotation=False, do_scale=False, auto_bring_to_front=True)
-        # self.main_body = FloatLayout()
+        self.canvas = Canvas()
+        with self.canvas:
+            self.fbo = Fbo(size=self.size)
+            self.fbo_rect = Rectangle()
+
+        with self.fbo:
+            ClearColor(0,0,0,0)
+            ClearBuffers()
         self._x = kwargs["x"]
         self._y = kwargs["y"]
         self._wight = 120
         self._height = 70
         self._mark_visible = False
         self._list_bonds = []
-        # self._parent: Widget = parentWidget
+        super(MolFrame, self).__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]))
 
         self.Name: TextInput = TextInput(text="New Substance", multiline=False,
                               background_color=(0, 0, 0, 0),
@@ -62,6 +66,33 @@ class MolFrame(Scatter):
         # self._parent.add_widget(self.Name)
         # self._parent.add_widget(self.Energy)
 
+    def add_widget(self, *largs):
+        # trick to attach graphics instruction to fbo instead of canvas
+        canvas = self.canvas
+        self.canvas = self.fbo
+        ret = super(MolFrame, self).add_widget( *largs)
+        self.canvas = canvas
+        return ret
+
+    def remove_widget(self, *largs):
+        canvas = self.canvas
+        self.canvas = self.fbo
+        super(MolFrame, self).remove_widget(*largs)
+        self.canvas = canvas
+
+    def on_size(self, instance, value):
+        self.fbo.size = value
+        self.texture = self.fbo.texture
+        self.fbo_rect.size = value
+
+    def on_pos(self, instance, value):
+        self.fbo_rect.pos = value
+
+    def on_texture(self, instance, value):
+        self.fbo_rect.texture = value
+
+    def on_alpha(self, instance, value):
+        self.fbo_color.rgba = (1, 1, 1, value)
 
     # def remove_widget(self):
     #     self._parent.remove_widget(self.Name)
