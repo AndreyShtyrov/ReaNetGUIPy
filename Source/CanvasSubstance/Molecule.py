@@ -1,10 +1,10 @@
 from kivy.app import App
 from kivy.graphics import Rectangle
 from kivy.graphics import Color
+from  kivy.uix.scatter import Scatter
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
-from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from functools import partial
 from kivy.graphics import Ellipse
@@ -35,9 +35,10 @@ class ellipse_box(FloatLayout):
         else:
             print("none")
 
-class MolFrame(FloatLayout):
+class MolFrame(Scatter):
     def __init__(self, **kwargs):
-        super(FloatLayout, self).__init__(width=120, height=30, pos=(kwargs["x"], kwargs["y"]))
+        super().__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]), do_rotation=False, do_scale=False, auto_bring_to_front=True)
+        # self.main_body = FloatLayout()
         self._x = kwargs["x"]
         self._y = kwargs["y"]
         self._wight = 120
@@ -45,17 +46,19 @@ class MolFrame(FloatLayout):
         self._mark_visible = False
         self._list_bonds = []
         # self._parent: Widget = parentWidget
-        self.Name: TextInput = TextInput(text="New Substance", width=120, height=30, pos=(self._x, self._y), multiline=False,
-                              size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
+
+        self.Name: TextInput = TextInput(text="New Substance", multiline=False,
+                              background_color=(0, 0, 0, 0),
                               foreground_color=(1, 1, 1, 1))
 
-        self.Energy: TextInput = TextInput(text=str(0.0),  width=120, height=30, multiline=False, pos=(self._x, self._y + 30),
-                              size_hint=(0.8, 0.5), background_color=(0, 0, 0, 0),
+        self.Energy: TextInput = TextInput(text=str(0.0), multiline=False,
+                               background_color=(0, 0, 0, 0), pos=(0, 30),
                               foreground_color=(1, 1, 1, 1))
+        self.add_widget(self.Energy)
+        self.add_widget(self.Name)
         # self.rellipse: Ellipse = ellipse_box(self._x - 10, self._y + 20)
         # self.lellipse: Ellipse = ellipse_box(self._x + self._wight + 10, self._y + 20)
-        self.add_widget(self.Name)
-        self.add_widget(self.Energy)
+
         # self._parent.add_widget(self.Name)
         # self._parent.add_widget(self.Energy)
 
