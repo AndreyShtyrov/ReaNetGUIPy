@@ -58,6 +58,7 @@ class main_window_menu(Bubble):
         super().__init__()
         self._new = kwargs["new"]
 
+
     def new(self):
         self._new()
 

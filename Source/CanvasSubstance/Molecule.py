@@ -35,22 +35,13 @@ class ellipse_box(FloatLayout):
 
 class MolFrame(FloatLayout):
     def __init__(self, **kwargs):
-        self.canvas = Canvas()
-        with self.canvas:
-            self.fbo = Fbo(size=self.size)
-            self.fbo_rect = Rectangle()
-
-        with self.fbo:
-            ClearColor(0,0,0,0)
-            ClearBuffers()
+        super(MolFrame, self).__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]))
         self._x = kwargs["x"]
         self._y = kwargs["y"]
         self._wight = 120
         self._height = 70
         self._mark_visible = False
         self._list_bonds = []
-        super(MolFrame, self).__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]))
-
         self.Name: TextInput = TextInput(text="New Substance", multiline=False,
                               background_color=(0, 0, 0, 0),
                               foreground_color=(1, 1, 1, 1))
@@ -60,58 +51,36 @@ class MolFrame(FloatLayout):
                               foreground_color=(1, 1, 1, 1))
         self.add_widget(self.Energy)
         self.add_widget(self.Name)
-        # self.rellipse: Ellipse = ellipse_box(self._x - 10, self._y + 20)
-        # self.lellipse: Ellipse = ellipse_box(self._x + self._wight + 10, self._y + 20)
 
-        # self._parent.add_widget(self.Name)
-        # self._parent.add_widget(self.Energy)
-
-    def add_widget(self, *largs):
-        # trick to attach graphics instruction to fbo instead of canvas
-        canvas = self.canvas
-        self.canvas = self.fbo
-        ret = super(MolFrame, self).add_widget( *largs)
-        self.canvas = canvas
-        return ret
-
-    def remove_widget(self, *largs):
-        canvas = self.canvas
-        self.canvas = self.fbo
-        super(MolFrame, self).remove_widget(*largs)
-        self.canvas = canvas
-
-    def on_size(self, instance, value):
-        self.fbo.size = value
-        self.texture = self.fbo.texture
-        self.fbo_rect.size = value
-
-    def on_pos(self, instance, value):
-        self.fbo_rect.pos = value
-
-    def on_texture(self, instance, value):
-        self.fbo_rect.texture = value
-
-    def on_alpha(self, instance, value):
-        self.fbo_color.rgba = (1, 1, 1, value)
-
-    # def remove_widget(self):
-    #     self._parent.remove_widget(self.Name)
-    #     self._parent.remove_widget(self.Energy)
 
     def check_click(self, touch):
         res, _ = self.check_click_name(touch.pos)
         return res
 
     def on_touch_down(self, touch):
-        if self._mark_visible:
-            if self.lellipse.collide_point(touch.pos[0], touch.pos[1]):
-                self.lellipse.col=(1, 0, 0, 0)
-                self._parent.createbond(self, "left")
-            if self.rellipse.collide_point(touch.pos[0], touch.pos[1]):
-                self.lellipse.col = (1, 0, 0, 0)
-                self._parent.createbond(self, "right")
+        if self.collide_point(touch.pos[0], touch.pos[1]):
+            print("touched")
+            touch.grab(self)
+            if touch.is_double_tap and bool(self.selected_object):
+                self.double_tap_events(touch)
+        # if self._mark_visible:
+        #     if self.lellipse.collide_point(touch.pos[0], touch.pos[1]):
+        #         self.lellipse.col=(1, 0, 0, 0)
+        #         self._parent.createbond(self, "left")
+        #     if self.rellipse.collide_point(touch.pos[0], touch.pos[1]):
+        #         self.lellipse.col = (1, 0, 0, 0)
+        #         self._parent.createbond(self, "right")
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is self:
+            self.pos = touch
+            self._x = touch.pos[0]
+            self._y = touch.pos[1]
 
 
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            touch.ungrab(self)
 
     def hide_marks(self):
         self._mark_visible = False
@@ -145,17 +114,6 @@ class MolFrame(FloatLayout):
             component.on_touch_down(touch)
         else:
             raise NotImplemented
-
-
-
-
-
-    def move(self, touch):
-        self.pos = (touch.pos[0], touch.pos[1])
-        # self.Name.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2)
-        # self.Energy.pos = (touch.pos[0] - self._wight/2, touch.pos[1] - self._height / 2 + 30)
-        self._x = touch.pos[0]
-        self._y = touch.pos[1]
 
 
 class MyApp(App):

@@ -20,7 +20,7 @@ Builder.load_string('''
 ''')
 
 
-class LinePlayground(FloatLayout):
+class Bond(FloatLayout):
     alpha_controlline = NumericProperty(1.0)
     alpha = NumericProperty(0.5)
     close = BooleanProperty(False)
@@ -36,7 +36,7 @@ class LinePlayground(FloatLayout):
 
 
     def on_touch_down(self, touch):
-        if super(LinePlayground, self).on_touch_down(touch):
+        if super(Bond, self).on_touch_down(touch):
             return True
         touch.grab(self)
         self.points.append(touch.pos)
@@ -46,19 +46,21 @@ class LinePlayground(FloatLayout):
         if touch.grab_current is self:
             self.points[-1] = touch.pos
             return True
-        return super(LinePlayground, self).on_touch_move(touch)
+        return super(Bond, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
             touch.ungrab(self)
             return True
-        return super(LinePlayground, self).on_touch_up(touch)
+        return super(Bond, self).on_touch_up(touch)
 
 
 class TestLineApp(App):
     def build(self):
-        return LinePlayground()
+        return Bond()
 
 
 if __name__ == '__main__':
     TestLineApp().run()
+
+
