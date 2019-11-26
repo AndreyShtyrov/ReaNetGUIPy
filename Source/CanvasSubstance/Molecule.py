@@ -33,11 +33,15 @@ class ellipse_box(FloatLayout):
         else:
             print("none")
 
-class MolFrame(FloatLayout):
+class MolFrame(Widget):
     def __init__(self, **kwargs):
-        super(MolFrame, self).__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]))
+        super().__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]))
         self._x = kwargs["x"]
         self._y = kwargs["y"]
+        try:
+            self.core_object = kwargs["core_object"]
+        except:
+            pass
         self._wight = 120
         self._height = 70
         self._mark_visible = False
@@ -52,30 +56,38 @@ class MolFrame(FloatLayout):
         self.add_widget(self.Energy)
         self.add_widget(self.Name)
 
+    def get_lbind_point(self):
+        return self._x , self._y + self._height / 2
+
+    def get_rbind_point(self):
+        return self._x + self._wight, self._y + self._height / 2
+
+    def update_bind_objects(self):
+        for update in self._update_object:
+            update(self)
+
 
     def check_click(self, touch):
         res, _ = self.check_click_name(touch.pos)
         return res
 
     def on_touch_down(self, touch):
+        print("execute MolFrame.on_touch_down")
+        print("position" + str(self.pos))
         if self.collide_point(touch.pos[0], touch.pos[1]):
             print("touched")
-            touch.grab(self)
+            if not touch.grab_current is self and touch.grab_current is not None:
+                touch.grab(self)
             if touch.is_double_tap and bool(self.selected_object):
                 self.double_tap_events(touch)
-        # if self._mark_visible:
-        #     if self.lellipse.collide_point(touch.pos[0], touch.pos[1]):
-        #         self.lellipse.col=(1, 0, 0, 0)
-        #         self._parent.createbond(self, "left")
-        #     if self.rellipse.collide_point(touch.pos[0], touch.pos[1]):
-        #         self.lellipse.col = (1, 0, 0, 0)
-        #         self._parent.createbond(self, "right")
+            return self
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
             self.pos = touch
             self._x = touch.pos[0]
             self._y = touch.pos[1]
+            self.update_bind_objects()
 
 
     def on_touch_up(self, touch):
@@ -112,6 +124,8 @@ class MolFrame(FloatLayout):
         if hasattr(self, name):
             component = getattr(self, name)
             component.on_touch_down(touch)
+            if hasattr(self, "core_object"):
+                self.core_object.rename(component.text)
         else:
             raise NotImplemented
 

@@ -1,9 +1,4 @@
-'''
-Bubble
-======
 
-Test of the widget Bubble.
-'''
 from Source.CanvasSubstance.Molecule import MolFrame
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
@@ -75,7 +70,6 @@ class MainMenu(FloatLayout):
                 self.bubb = bubb = MolFrame_menu(**kwargs)
             else:
                 self.bubb = bubb = main_window_menu(**kwargs)
-            self.pos = pos
             self.add_widget(bubb)
         else:
             values = ('left_top')

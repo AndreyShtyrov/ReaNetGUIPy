@@ -36,17 +36,20 @@ class LinePlayground(FloatLayout):
 
 
     def on_touch_down(self, touch):
+        print(touch.grab_current)
         if super(LinePlayground, self).on_touch_down(touch):
             return True
         touch.grab(self)
+        print(touch.grab_current)
         self.points.append(touch.pos)
         return True
 
     def on_touch_move(self, touch):
+        super(LinePlayground, self).on_touch_move(touch)
         if touch.grab_current is self:
             self.points[-1] = touch.pos
             return True
-        return super(LinePlayground, self).on_touch_move(touch)
+
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:

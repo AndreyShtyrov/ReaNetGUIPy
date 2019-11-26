@@ -1,6 +1,8 @@
 from Source.IO import data
 from Source.Core.ChCompound.ChCompound import ChCompound
+from Source.Core.ChCalculations import ChCalculations
 from pathlib import Path
+
 
 class ChProject(data):
 
@@ -10,9 +12,10 @@ class ChProject(data):
         self.directory = file_path / self.Name
         self.saveFileName = self.directory / (self.Name + ".json")
         self.compounds = []
-        self.projects = []
+        self.general_method: [ChCalculations] = []
         self.directory.mkdir(parents=True, exist_ok=True)
         self.short_save.extend([ChCompound])
+
 
     def add_new_compound(self, compound_name):
         self.compounds.append(ChCompound(self.directory/ compound_name, name=compound_name))

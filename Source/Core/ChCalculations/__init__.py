@@ -5,7 +5,8 @@ import os
 class ChCalculations(data):
 
 
-    def __init__(self, file_location ,step_name="step1"):
+    def __init__(self, file_location ,step_name="step1", gui=None):
+        super().__init__()
         self.Name: str = step_name
         self.status: bool = False
         self.input_creater = None
@@ -14,6 +15,9 @@ class ChCalculations(data):
         self.specifcation= ""
         self.add_information= ""
         self.saveFileName = self.directory / (self.Name + ".json")
+        self.binded_iterface = gui
+        self.post_processing = []
+        self.next_step = [ChCalculations]
 
         self.post_processing: []
 
@@ -27,6 +31,10 @@ class ChCalculations(data):
 
     def code_command(self):
         pass
+
+    def add_next_step(self, other):
+        self.next_step.append(other)
+
 
     def generate_input(self):
         if bool(self.input_creater):

@@ -5,7 +5,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
 
 Builder.load_string('''
-<LinePlayground>:
+<Bond>:
     canvas:
         Color:
             rgba: .8, .8, .8, root.alpha_controlline
@@ -20,7 +20,7 @@ Builder.load_string('''
 ''')
 
 
-class Bond(FloatLayout):
+class Bond(FloatLayout, ):
     alpha_controlline = NumericProperty(1.0)
     alpha = NumericProperty(0.5)
     close = BooleanProperty(False)
@@ -34,25 +34,37 @@ class Bond(FloatLayout):
     dash_offset = NumericProperty(0)
     dashes = ListProperty([])
 
+    def __init__(self, click=None, prev_object = None):
+        super().__init__()
+        click.grab(self)
+        self.left(prev_object)
+
+    def update_left(self, new_pos):
+        self.points[-1] = new_pos
+
+    def update_right(self, new_pos):
+        self.points[0] = new_pos
 
     def on_touch_down(self, touch):
-        if super(Bond, self).on_touch_down(touch):
-            return True
-        touch.grab(self)
-        self.points.append(touch.pos)
-        return True
+        if touch.current_grab is self:
+            self.points.append(touch.pos)
+            if bool(self.points):
+                return "Bind"
+        if touch.button is "right":
+            self.ungrab(self)
+            return "Bind"
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
-            self.points[-1] = touch.pos
+            self.update_left(touch.pos)
             return True
-        return super(Bond, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
             touch.ungrab(self)
             return True
-        return super(Bond, self).on_touch_up(touch)
+
+
 
 
 class TestLineApp(App):

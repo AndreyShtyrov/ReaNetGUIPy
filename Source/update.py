@@ -39,7 +39,6 @@ class MainWidget(Widget):
         def decor_functions(func_todecorate, add_arg):
             def shell():
                 return func_todecorate(add_arg)
-
             return shell
         ud = touch.ud
         ud['label'] = Label(size_hint=(None, None))

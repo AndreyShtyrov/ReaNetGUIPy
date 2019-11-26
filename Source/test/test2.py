@@ -1,76 +1,65 @@
-import logging
 from kivy.app import App
-from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.lang import Builder
+from kivy.uix.bubble import Bubble
 from kivy.uix.widget import Widget
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from functools import partial
-from kivy.uix.boxlayout import BoxLayout
-from Source.CanvasSubstance.Molecule import MolFrame
-from kivy.uix.label import Label
-from Source.Menu.bubble_menu import MainMenu
-from Source.Menu.menu import menu
-from kivy.graphics import Line
+
+Builder.load_string('''
+<main_window_menu>:
+    size_hint: (None, None)
+    size: (160, 80)
+    pos_hint: {'center_x': .5, 'y': .3}
+    BubbleButton:
+        text: 'New'
+        on_press: root.new()
+
+''')
+
+class main_window_menu(Bubble):
+    def __init__(self, **kwargs):
+        super().__init__(pos=kwargs.pop("pos"))
+        self._new = kwargs["new"]
 
 
-class test_widget(RelativeLayout):
+    def new(self):
+        self._new()
+
+class Menu(FloatLayout):
 
     def __init__(self, **kwargs):
-        super(RelativeLayout, self).__init__(size_hint=(None, None), width=220, height=80, pos=(200, 200))
+        super().__init__()
+        self.show_bubble(**kwargs)
 
-        self.Name: TextInput = TextInput(text="New Substance", multiline=False,
-                              background_color=(0, 0, 0, 0),
-                              foreground_color=(1, 1, 1, 1), pos=(0, -30))
-
-        self.Energy: TextInput = TextInput(text=str(0.0), multiline=False,
-                               background_color=(0, 0, 0, 0),
-                              foreground_color=(1, 1, 1, 1))
-        self.add_widget(self.Name)
-        self.add_widget(self.Energy)
+    def show_bubble(self, **kwargs):
+        self.bubb = main_window_menu(**kwargs)
+        self.add_widget(self.bubb)
 
     def on_touch_down(self, touch):
-        if self.collide_point(touch.pos[0], touch.pos[1]):
-            touch.grab(self)
-            print("grab")
-        return True
+        self.bubb.on_touch_down(touch)
 
-    def on_touch_up(self, touch):
-        if touch.grab_current is self:
-            print("ungrab")
-            touch.ungrab(self)
-
-
-
-    def on_touch_move(self, touch):
-        if touch.grab_current is self:
-            self.pos = (touch.pos[0], touch.pos[1])
-
-
-
-class dWidget(Widget):
+class Frame(Widget):
+    def __init__(self):
+        super().__init__()
 
     def on_touch_down(self, touch):
-        print("something")
+        print(touch.pos)
         super().on_touch_down(touch)
+        print(touch.pos)
+        for child in self.children:
+            if type(child) is main_window_menu:
+                self.remove_widget(child)
+        if touch.button == 'right':
+            menu = main_window_menu(pos=touch.pos, new=self.new_operation)
+            self.add_widget(menu)
 
-    def on_touch_move(self, touch):
-        super().on_touch_move(touch)
 
-    def on_touch_up(self, touch):
-        super().on_touch_up(touch)
+    def new_operation(self):
+        pass
 
 class MyApp(App):
     def build(self):
-        root = FloatLayout()
-        tt = test_widget()
-        sep_w = dWidget()
-
-        root.add_widget(sep_w)
-        sep_w.add_widget(tt)
-
-        return root
-
+        tt = Frame()
+        return tt
 
 if __name__ == '__main__':
     MyApp().run()
