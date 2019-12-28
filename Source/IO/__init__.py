@@ -61,26 +61,12 @@ def _search_file_with_template_in_name(curr_path: pathlib.Path, template: str) -
 class data():
 
     def __init__(self, file_location: pathlib.Path, name="new"):
-        value = -1
-        for component in file_location.iterdir():
-            if name in component.name:
-                if name == component.name:
-                    value = 0
-                else:
-                    t = int(component.name.split(name)[-1])
-                    if t > value:
-                        value = t
-        acc = value + 1
-        if acc != 0:
-            self.Name = name + str(acc)
-        else:
-            self.Name = name
+        self.Name = self._search_aval_name(file_location, name)
         self.directory = file_location / self.Name
         self.saveFileName = self.directory / (self.Name + ".json")
 
         self.short_save = []
         self.dont_save: list = ['dont_save', 'saveFileName', 'directory', 'short_save']
-
 
 
 
@@ -136,6 +122,23 @@ class data():
             self.dont_save
             return False
         return True
+
+    def _search_aval_name(self, file_location, name):
+        value = -1
+        for component in file_location.iterdir():
+            if name in component.name:
+                if name == component.name:
+                    value = 0
+                else:
+                    t = int(component.name.split(name)[-1])
+                    if t > value:
+                        value = t
+        acc = value + 1
+        if acc != 0:
+            return name + str(acc)
+        else:
+            return name
+
 
     def _convert_in_dictionary(self, name, convert_object):
         result_dic = {}

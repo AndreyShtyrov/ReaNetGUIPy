@@ -12,8 +12,6 @@ class ChCompound(data):
         super().__init__(file_location, name)
         self.components = []
         self.Energy = energy
-        self.directory = file_location
-        self.saveFileName = self.directory / (self.Name + ".json")
         self.directory.mkdir(parents=True, exist_ok=True)
         self._zero = 0.0
         self.rBonds = []
