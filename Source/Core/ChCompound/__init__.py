@@ -8,7 +8,7 @@ class rEnergy():
         self._zero = 0.0
 
 class ChCompound(data):
-    def __init__(self, file_location,  energy=0.0, name="New Substance"):
+    def __init__(self, file_location, gui,  energy=0.0, name="New Substance"):
         super().__init__()
         self.components = []
         self.Name = name
@@ -20,6 +20,13 @@ class ChCompound(data):
         self.rBonds = []
         self.lBonds = []
         self.short_save.extend([ChComponent])
+        self.save()
+
+
+    def update(self):
+        super().update()
+        self.Energy = float(self.gui.Text)
+
 
     def get_left(self):
         for bounded in self.lBonds:

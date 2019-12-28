@@ -20,11 +20,10 @@ def get_dir_tree(curr_path: pathlib.Path):
             yield file
     return
 
+
 def treatment_exception(error: Exception):
     if error is PermissionError:
         return False
-
-
 
 
 def make_dir_forced(curr_dir: pathlib.Path)-> None:
@@ -40,11 +39,13 @@ def get_dir_tree_list(curr_path: pathlib.Path):
         result.append(file)
     return result
 
+
 def search_file_with_template_in_name(curr_path: pathlib.Path, template: str) -> Union[pathlib.Path, bool]:
     try:
         return _search_file_with_template_in_name(curr_path, template)
     except PermissionError:
         return False
+
 
 def _search_file_with_template_in_name(curr_path: pathlib.Path, template: str) -> Union[pathlib.Path, bool]:
     main_dir = pathlib.Path.home()
@@ -61,10 +62,19 @@ class data():
 
     def __init__(self):
         self.Name: str
+        self.short_save = []
         self.directory: pathlib.Path = pathlib.Path.cwd()
         self.saveFileName: pathlib.Path
         self.dont_save: list = ['dont_save', 'saveFileName', 'directory', 'short_save']
-        self.short_save: list = []
+
+
+    def update(self):
+        if hasattr(self, 'gui'):
+            self.Name = self.gui.Name
+
+
+    def add_gui(self, gui):
+        self.gui = gui
 
     @staticmethod
     def convert_ndarray(array: np.ndarray):
@@ -84,19 +94,20 @@ class data():
             return str(instance)
 
     def save(self):
-        rdict = self.convert_in_dictionary(self.Name, self)
+        rdict = self._convert_in_dictionary(self.Name, self)
         self._save_json(self.saveFileName, rdict)
 
     def rename(self, name):
-        self.Name = name
-        new_directory = self.saveFileName.parent / self.Name
-        shutil.move(str(self.directory), str(new_directory))
-        self.directory = new_directory
+        if self.Name != name:
+            self.Name = name
+            new_directory = self.saveFileName.parent / self.Name
+            shutil.move(str(self.directory), str(new_directory), copy_function = shutil.copytree)
+            self.directory = new_directory
 
     def assotiate_with_file(self, file_str):
         file = Path(file_str)
         if file.is_file():
-            if file.parent is  not self.directory:
+            if file.parent is not self.directory:
                 shutil.copy(str(file), str(self.directory/ "result.out"))
             elif file.parent is self.directory and file.name != "result.out":
                 shutil.move(str(file), str(self.directory/ "result.out"))
@@ -110,22 +121,25 @@ class data():
             return False
         return True
 
-    def convert_in_dictionary(self, name, convert_object):
+    def _convert_in_dictionary(self, name, convert_object):
         result_dic = {}
         if self._check_type_saving(convert_object):
             return {name: str(convert_object.directory.relative_to(self.directory))}
-        if hasattr(convert_object, '__dict__'):
+
+        if hasattr(convert_object, 'convert_in_dictionary'):
+            return {name: convert_object.convert_in_dictionary()}
+        elif hasattr(convert_object, '__dict__'):
             for key, value in convert_object.__dict__.items():
                 if not callable(value):
                     if self.exclude_attr_from_saving(key):
-                        result_dic.update(self.convert_in_dictionary(key, value))
+                        result_dic.update(self._convert_in_dictionary(key, value))
         elif issubclass(type(convert_object), np.ndarray):
             t_value = self.convert_ndarray(convert_object)
             result_dic.update({name: t_value})
         elif issubclass(type(convert_object), list):
-            t_value =[]
+            t_value = []
             for item in convert_object:
-                t_value.append(self.convert_in_dictionary(str(type(item).__name__), item))
+                t_value.append(self._convert_in_dictionary(str(type(item).__name__), item))
             result_dic.update({name: t_value})
         else:
             if name is not "save_name":

@@ -1,5 +1,5 @@
 from Source.IO import data
-from Source.Core.ChCompound.ChCompound import ChCompound
+from Source.Core.ChCompound import ChCompound
 from Source.Core.ChCalculations import ChCalculations
 from pathlib import Path
 
@@ -15,10 +15,19 @@ class ChProject(data):
         self.general_method: [ChCalculations] = []
         self.directory.mkdir(parents=True, exist_ok=True)
         self.short_save.extend([ChCompound])
+        self.calculations = []
 
 
-    def add_new_compound(self, compound_name):
-        self.compounds.append(ChCompound(self.directory/ compound_name, name=compound_name))
+    def update(self):
+        for compound in self.compounds:
+            compound.update()
+        for calc in self.calculations:
+            calc.update()
+
+    def add_new_compound(self, compound_name="New Substance"):
+        chc = ChCompound(self.directory/compound_name, name=compound_name)
+        self.compounds.append(chc)
+        return chc
 
     def save(self):
         for compound in self.compounds:

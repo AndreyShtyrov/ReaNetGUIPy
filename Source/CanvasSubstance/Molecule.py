@@ -1,8 +1,12 @@
 from kivy.app import App
 from kivy.graphics import Color, Rectangle, Canvas, ClearBuffers, ClearColor
 from kivy.graphics.fbo import Fbo
+# from kivy.input.provider import touch
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
+from Source.Core.ChCompound import ChCompound
+from Source.Core.ChCalculations import ChCalculations
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 from functools import partial
 from kivy.graphics import Ellipse
@@ -33,101 +37,109 @@ class ellipse_box(FloatLayout):
         else:
             print("none")
 
-class MolFrame(Widget):
-    def __init__(self, **kwargs):
-        super().__init__(width=220, height=80, pos=(kwargs["x"], kwargs["y"]))
-        self._x = kwargs["x"]
-        self._y = kwargs["y"]
-        try:
-            self.core_object = kwargs["core_object"]
-        except:
-            pass
-        self._wight = 120
-        self._height = 70
-        self._mark_visible = False
-        self._list_bonds = []
-        self.Name: TextInput = TextInput(text="New Substance", multiline=False,
-                              background_color=(0, 0, 0, 0),
+class MolFrame(RelativeLayout):
+    def __init__(self, core_object, **kwargs):
+        pos = kwargs["pos"]
+        super().__init__(size_hint=(None, None), width=220, height=80, pos=pos)
+        self.core_object = core_object
+        self._update_object = []
+        self.Name: TextInput = TextInput(text=core_object.Name, multiline=False,
+                              background_color=(0, 0, 0, 0), size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.7},
                               foreground_color=(1, 1, 1, 1))
-
-        self.Energy: TextInput = TextInput(text=str(0.0), multiline=False,
-                               background_color=(0, 0, 0, 0), pos=(0, 30),
-                              foreground_color=(1, 1, 1, 1))
-        self.add_widget(self.Energy)
+        if type(core_object) is ChCompound:
+            self.Text: TextInput = TextInput(text=str(core_object.Energy), multiline=False, size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.2},
+                                               background_color=(0, 0, 0, 0),
+                                               foreground_color=(1, 1, 1, 1))
+        elif type(core_object) is ChCalculations:
+            self.Text: TextInput = TextInput(text=str(core_object.specification), multiline=False, size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.2},
+                                               background_color=(0, 0, 0, 0),
+                                               foreground_color=(1, 1, 1, 1))
+        self.core_object.add_gui(self)
+        self.add_widget(self.Text)
         self.add_widget(self.Name)
+        self.core_object.save()
 
-    def get_lbind_point(self):
-        return self._x , self._y + self._height / 2
+    def check_click_name(self, pos: tuple):
+        if self.Name.collide_point(pos[0], pos[1]):
+                return True, "Name"
+        if self.Text.collide_point(pos[0], pos[1]):
+            return True, "Text"
+        return False, "None"
 
-    def get_rbind_point(self):
-        return self._x + self._wight, self._y + self._height / 2
-
-    def update_bind_objects(self):
-        for update in self._update_object:
-            update(self)
-
-
-    def check_click(self, touch):
-        res, _ = self.check_click_name(touch.pos)
-        return res
+    def update(self, touch):
+        self.pos = touch.pos
+        self._update_bind_objects(touch)
 
     def on_touch_down(self, touch):
         print("execute MolFrame.on_touch_down")
         print("position" + str(self.pos))
         if self.collide_point(touch.pos[0], touch.pos[1]):
             print("touched")
-            if not touch.grab_current is self and touch.grab_current is not None:
-                touch.grab(self)
-            if touch.is_double_tap and bool(self.selected_object):
+            if touch.is_double_tap:
+                x, y = touch.x, touch.y
+                touch.push()
+                touch.apply_transform_2d(self.to_local)
+                print(touch.pos)
                 self.double_tap_events(touch)
-            return self
+                touch.pop()
+            else:
+                touch.grab(self)
+            return True
+
+    def convert_in_dictionary(self):
+        result = dict()
+        result.update({"x": self.pos[0]})
+        result.update({"y": self.pos[1]})
+        return result
+
+    def load(self, config: dict):
+        pass
+
+
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
-            self.pos = touch
-            self._x = touch.pos[0]
-            self._y = touch.pos[1]
-            self.update_bind_objects()
-
+            self.update(touch)
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
             touch.ungrab(self)
 
-    def hide_marks(self):
-        self._mark_visible = False
-        self._parent.remove_widget(self.lellipse)
-        self._parent.remove_widget(self.rellipse)
-
-    def show_bonds_marks(self):
-        self._mark_visible = True
-        self._parent.add_widget(self.lellipse)
-        self._parent.add_widget(self.rellipse)
-        Clock.schedule_once(self.hide_marks, 80)
-
-
-    def get_specific_methods(self):
-        for atr in dir(self):
-            if "menu" in atr:
-                yield getattr(self, atr)
-        return
-
-    def check_click_name(self, pos: tuple):
-        if self.Name.collide_point(pos[0], pos[1]):
-                return True, "Name"
-        if self.Energy.collide_point(pos[0], pos[1]):
-            return True, "Energy"
-        return False, None
-
     def double_tap_events(self, touch):
-        _, name = self.check_click_name(touch.pos)
-        if hasattr(self, name):
-            component = getattr(self, name)
-            component.on_touch_down(touch)
-            if hasattr(self, "core_object"):
+        is_pointed, Name = self.check_click_name(touch.pos)
+        if is_pointed:
+            if hasattr(self, Name):
+                component = getattr(self, Name)
+                component.on_touch_down(touch)
                 self.core_object.rename(component.text)
-        else:
-            raise NotImplemented
+            else:
+                raise NotImplemented
+
+    def check_click(self, touch):
+        res, _ = self.check_click_name(touch.pos)
+        return res
+
+    def _update_bind_objects(self, touch):
+        for update in self._update_object:
+            update(self, touch)
+
+    # def hide_marks(self):
+    #     self._mark_visible = False
+    #     self._parent.remove_widget(self.lellipse)
+    #     self._parent.remove_widget(self.rellipse)
+    #
+    # def show_bonds_marks(self):
+    #     self._mark_visible = True
+    #     self._parent.add_widget(self.lellipse)
+    #     self._parent.add_widget(self.rellipse)
+    #     Clock.schedule_once(self.hide_marks, 80)
+    #
+    # def get_lbind_point(self):
+    #     return self._x , self._y + self._height / 2
+    #
+    # def get_rbind_point(self):
+    #     return self._x + self._wight, self._y + self._height / 2
+
 
 
 class MyApp(App):
