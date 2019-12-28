@@ -7,10 +7,7 @@ from pathlib import Path
 class ChProject(data):
 
     def __init__(self, file_path, name="New Project"):
-        super().__init__()
-        self.Name = name
-        self.directory = file_path / self.Name
-        self.saveFileName = self.directory / (self.Name + ".json")
+        super().__init__(file_path, name)
         self.compounds = []
         self.general_method: [ChCalculations] = []
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -25,7 +22,7 @@ class ChProject(data):
             calc.update()
 
     def add_new_compound(self, compound_name="New Substance"):
-        chc = ChCompound(self.directory/compound_name, name=compound_name)
+        chc = ChCompound(self.directory, name=compound_name)
         self.compounds.append(chc)
         return chc
 

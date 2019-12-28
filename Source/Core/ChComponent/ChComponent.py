@@ -5,14 +5,11 @@ import shutil
 
 class ChComponent(data):
 
-    def __init__(self, file_location, name= "New Component"):
-        super().__init__()
+    def __init__(self, file_location, name="New Component"):
+        super().__init__(file_location, name)
         self._associated_file = None
         self.Energy = None
-        self.Name = "New Component"
         self.parser = None
-        self.directory = file_location / self.Name
-        self.saveFileName = self.directory / "name.json"
         self.directory.mkdir(parents=True, exist_ok=True)
         self._sgeom: Path = self.directory / "scoord.xyz"
         if self._sgeom.is_file():

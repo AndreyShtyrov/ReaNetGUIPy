@@ -5,17 +5,14 @@ import os
 class ChCalculations(data):
 
 
-    def __init__(self, file_location, step_name="step1"):
-        super().__init__()
-        self.Name: str = step_name
+    def __init__(self, file_location, name="step1"):
+        super().__init__(file_location, name)
         self.status: bool = False
         self.input_creater = None
         self.parser = None
-        self.directory = file_location / self.Name
         self.specification = ""
         self.add_information = ""
         self.directory.mkdir(parents=True, exist_ok=True)
-        self.saveFileName = self.directory / (self.Name + ".json")
         self.post_processing = []
         self.next_step = [ChCalculations]
         self.post_processing: []

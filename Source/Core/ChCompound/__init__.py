@@ -8,10 +8,9 @@ class rEnergy():
         self._zero = 0.0
 
 class ChCompound(data):
-    def __init__(self, file_location, gui,  energy=0.0, name="New Substance"):
-        super().__init__()
+    def __init__(self, file_location,  energy=0.0, name="New Substance"):
+        super().__init__(file_location, name)
         self.components = []
-        self.Name = name
         self.Energy = energy
         self.directory = file_location
         self.saveFileName = self.directory / (self.Name + ".json")
