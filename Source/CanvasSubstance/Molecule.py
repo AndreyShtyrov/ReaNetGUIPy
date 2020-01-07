@@ -5,6 +5,7 @@ from kivy.graphics.fbo import Fbo
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from Source.Core.ChCompound import ChCompound
+from kivy.properties import StringProperty
 from Source.Core.ChCalculations import ChCalculations
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
@@ -43,9 +44,10 @@ class MolFrame(RelativeLayout):
         super().__init__(size_hint=(None, None), width=220, height=80, pos=pos)
         self.core_object = core_object
         self._update_object = []
+
         self.Name: TextInput = TextInput(text=core_object.Name, multiline=False,
                               background_color=(0, 0, 0, 0), size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.7},
-                              foreground_color=(1, 1, 1, 1))
+                              foreground_color=(1, 1, 1, 1), on_text=self.on_change_name)
         if type(core_object) is ChCompound:
             self.Text: TextInput = TextInput(text=str(core_object.Energy), multiline=False, size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.2},
                                                background_color=(0, 0, 0, 0),
@@ -58,6 +60,15 @@ class MolFrame(RelativeLayout):
         self.add_widget(self.Text)
         self.add_widget(self.Name)
         self.core_object.save()
+
+    def on_Text(self, *args):
+        self.core_object.rename(self.Text.text)
+
+    def on_change_name(self, instance, pos):
+        self.core_object.rename(instance.text)
+
+    def on_change_text(self, instance):
+        pass
 
     def check_click_name(self, pos: tuple):
         if self.Name.collide_point(pos[0], pos[1]):
@@ -111,7 +122,6 @@ class MolFrame(RelativeLayout):
             if hasattr(self, Name):
                 component = getattr(self, Name)
                 component.on_touch_down(touch)
-                self.core_object.rename(component.text)
             else:
                 raise NotImplemented
 

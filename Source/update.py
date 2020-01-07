@@ -34,16 +34,19 @@ class MainWidget(Widget):
         self.log = logging.getLogger("MainWindow")
 
 
+    def del_float_windows(self, touch):
+        super().on_touch_down(touch)
+        for child in self.children:
+            if type(child) is MainMenu:
+                self.remove_widget(child)
+
     def new_comp(self, touch):
         new_sub = self.project.add_new_compound()
         new_sub_frame = MolFrame(new_sub, pos=touch.pos)
         self.add_widget(new_sub_frame)
 
     def on_touch_down(self, touch):
-        super().on_touch_down(touch)
-        for child in self.children:
-            if type(child) is MainMenu:
-                self.remove_widget(child)
+        self.del_float_windows(touch)
         if self.collide_point(*touch.pos):
             if touch.button == 'right':
                 create = decor_functions(self.new_comp, touch)
@@ -67,6 +70,8 @@ class MainWidget(Widget):
             self._bubblmenu = None
             del (obj)
 
+    def _update_project(self):
+        self.project.update()
 
 
 
