@@ -69,10 +69,8 @@ class MolFrame(RelativeLayout):
         self.add_widget(self.Name)
         self.core_object.save()
 
-
     def on_change_name(self, instance):
         self.core_object.rename(instance.text)
-
 
     def check_click_name(self, pos: tuple):
         if self.Name.collide_point(pos[0], pos[1]):
@@ -89,28 +87,27 @@ class MolFrame(RelativeLayout):
         print("execute MolFrame.on_touch_down")
         print("position" + str(self.pos))
         if self.collide_point(touch.pos[0], touch.pos[1]):
-            print("touched")
             touch.push()
             touch.apply_transform_2d(self.to_local)
+            self.try_click_on_menu(touch)
+            self.del_float_windows(touch)
             if touch.is_double_tap:
                 self.double_tap_events(touch)
             elif touch.button == 'right':
                 self._make_menu(touch)
-            elif self.check_click_on_menu(touch):
-                super().on_touch_down(touch)
-                self.del_float_windows(touch)
             else:
                 touch.grab(self)
+
             touch.pop()
             return True
         self.del_float_windows(touch)
 
-    def check_click_on_menu(self, touch):
+    def try_click_on_menu(self, touch):
         for child in self.children:
             if type(child) is bubbleMenuFrame:
                 if child.collide_point(*touch.pos):
-                    return True
-        return False
+                    child.on_touch_down(touch)
+                    self.remove_widget(child)
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
@@ -150,10 +147,11 @@ class MolFrame(RelativeLayout):
         bmenu = bubbleMenuFrame(touch.pos, calls=[call])
         self.add_widget(bmenu)
 
-
     def _update_bind_objects(self, touch):
         for update in self._update_object:
             update(self, touch)
+
+
 
     # def hide_marks(self):
     #     self._mark_visible = False
