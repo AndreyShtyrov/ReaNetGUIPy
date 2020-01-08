@@ -8,14 +8,16 @@ class rEnergy():
         self._zero = 0.0
 
 class ChCompound(data):
-    def __init__(self, file_location,  energy=0.0, name="New Substance"):
+    def __init__(self, file_location,  energy=0.0, name="New Substance", parent = None):
         super().__init__(file_location, name)
         self.components = []
         self.Energy = energy
         self.directory.mkdir(parents=True, exist_ok=True)
         self._zero = 0.0
+        self.parent = parent
         self.rBonds = []
         self.lBonds = []
+        self.dont_save.append("parent")
         self.short_save.extend([ChComponent])
         self.save()
 

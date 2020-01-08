@@ -13,7 +13,7 @@ from Source.Core import ChProject
 from Source.Core import ChCalculations
 from pathlib import Path
 from Source.Bounding import Bond
-from Source.CalculationWindow.menu import main_window_menu, MainMenu
+
 
 
 class corframe(Widget):

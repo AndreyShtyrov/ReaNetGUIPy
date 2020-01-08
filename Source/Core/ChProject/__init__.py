@@ -13,16 +13,21 @@ class ChProject(data):
         self.directory.mkdir(parents=True, exist_ok=True)
         self.short_save.extend([ChCompound])
         self.calculations = []
+        self._is_updating = False
 
 
     def update(self):
-        for compound in self.compounds:
-            compound.update()
-        for calc in self.calculations:
-            calc.update()
+        if not self._is_updating:
+            self._is_updating = True
+            for compound in self.compounds:
+                compound.update()
+            for calc in self.calculations:
+                calc.update()
+            self.save()
+            self._is_updating = False
 
     def add_new_compound(self, compound_name="New Substance"):
-        chc = ChCompound(self.directory, name=compound_name)
+        chc = ChCompound(self.directory, name=compound_name, parent=self)
         self.compounds.append(chc)
         return chc
 

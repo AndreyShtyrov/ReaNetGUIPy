@@ -1,75 +1,47 @@
-
-from Source.CanvasSubstance.Molecule import MolFrame
-from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.button import Button
 from kivy.lang import Builder
-from kivy.uix.bubble import Bubble
+from kivy.uix.bubble import Bubble, BubbleButton
 
 
 Builder.load_string('''
 <main_window_menu>:
     size_hint: (None, None)
-    size: (160, 80)
-    BubbleButton:
-        text: 'New'
-        on_press: root.new()
-
-
-<MolFrame_menu>:
-    size_hint: (None, None)
-    size: (260, 80)
-    pos_hint: {'center_x': .5, 'y': .3}
-    BubbleButton:
-        text: 'New Bond'
-        on_press: root.newbond()
-    BubbleButton:
-        text: 'Delete'
-        on_press: root.delFrame()
-    BubbleButton:
-        text: 'Copy'
-        on_press: root.copyFrame()
 ''')
 
-class MolFrame_menu(Bubble):
+def decorate_functions(func_to_decorate, add_arg):
+    def shell():
+        return func_to_decorate(add_arg)
+    return shell
+
+class bubbleMenu(Bubble):
     def __init__(self, **kwargs):
-        super().__init__()
-        self._newbond = kwargs["newbond"]
-        self._del = kwargs["delFrame"]
-        self._copy = kwargs["copyFrame"]
-
-    def newbond(self):
-        self._newbond()
-
-    def delFrame(self):
-        self._del()
-
-    def copyFrame(self):
-        self._copy()
+        dheight = 80
+        dweight = 100
+        calls = kwargs["calls"]
+        ldweight = len(calls) * dweight
+        super().__init__(size=(dheight, ldweight))
+        for call in calls:
+            # it is need to create lambda function which take 1 argument: self and call delegate
+            # otherwise it try to give it to delegate and would fall
+            button = BubbleButton(text=call["name"], on_press=lambda x: call["call"]())
+            self.add_widget(button)
 
 
-class main_window_menu(Bubble):
-    def __init__(self, **kwargs):
-        super().__init__()
-        self._new = kwargs["new"]
-
-    def new(self):
-        self._new()
-
-
-class MainMenu(RelativeLayout):
+class bubbleMenuFrame(RelativeLayout):
 
     def __init__(self, pos, **kwargs):
-        super(MainMenu, self).__init__(size_hint=(None, None), size=(160, 80), pos=pos)
+        dheight = 50
+        dweight = 50
+        calls = kwargs["calls"]
+        ldweight = len(calls) * dweight
+        super().__init__(size_hint=(None, None), size=(ldweight, dheight), pos=pos)
         self.show_bubble(**kwargs)
 
     def show_bubble(self, **kwargs):
         if not hasattr(self, 'bubb'):
-            self.bubb = bubb = main_window_menu(**kwargs)
+            self.bubb = bubb = bubbleMenu(**kwargs)
             self.add_widget(bubb)
         else:
             values = ('left_top')
             index = values.index(self.bubb.arrow_pos)
             self.bubb.arrow_pos = values[(index + 1) % len(values)]
-

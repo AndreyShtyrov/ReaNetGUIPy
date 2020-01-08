@@ -101,10 +101,16 @@ class data():
 
     def rename(self, name):
         if self.Name != name:
-            self.Name = name
-            new_directory = self.saveFileName.parent / self.Name
-            shutil.move(str(self.directory), str(new_directory), copy_function = shutil.copytree)
+            new_directory = self.directory.parent / name
+            shutil.move(str(self.directory), str(new_directory), copy_function=shutil.copytree)
+            new_saveFileName = new_directory / (name + ".json")
             self.directory = new_directory
+            self.saveFileName = self.directory / (self.Name + ".json")
+            shutil.move(str(self.saveFileName), str(new_saveFileName))
+            self.saveFileName = new_saveFileName
+            self.Name = name
+            self.save()
+
 
     def assotiate_with_file(self, file_str):
         file = Path(file_str)

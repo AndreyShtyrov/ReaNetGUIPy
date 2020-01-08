@@ -12,8 +12,7 @@ from kivy.uix.textinput import TextInput
 from functools import partial
 from kivy.graphics import Ellipse
 from kivy.graphics import Color
-from kivy.uix.boxlayout import BoxLayout
-from kivy.clock import Clock
+from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
 
 class ellipse_box(FloatLayout):
 
@@ -23,7 +22,6 @@ class ellipse_box(FloatLayout):
         with self.canvas:
             Color(0.6, 0.6, 0.6, mode='hsv')
             self.ellipse: Ellipse = Ellipse(pos=((x, y)), size=(10, 10), Color=(1, 1, 1))
-
 
 
     def make_visible(self):
@@ -45,30 +43,36 @@ class MolFrame(RelativeLayout):
         self.core_object = core_object
         self._update_object = []
 
-        self.Name: TextInput = TextInput(text=core_object.Name, multiline=False,
-                              background_color=(0, 0, 0, 0), size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.7},
-                              foreground_color=(1, 1, 1, 1), on_text=self.on_change_name)
+        self.Name: TextInput = TextInput(text=core_object.Name,
+                                        multiline=False,
+                                        background_color=(0, 0, 0, 0),
+                                        size_hint=(0.8, 0.4),
+                                        pos_hint={"left": 0.1, "top": 0.7},
+                                        foreground_color=(1, 1, 1, 1),
+                                        on_text_validate=self.on_change_name)
         if type(core_object) is ChCompound:
-            self.Text: TextInput = TextInput(text=str(core_object.Energy), multiline=False, size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.2},
-                                               background_color=(0, 0, 0, 0),
-                                               foreground_color=(1, 1, 1, 1))
+            self.Text: TextInput = TextInput(text=str(core_object.Energy),
+                                             multiline=False,
+                                             size_hint=(0.8, 0.4),
+                                             pos_hint={"left": 0.1, "top": 0.2},
+                                             background_color=(0, 0, 0, 0),
+                                             foreground_color=(1, 1, 1, 1))
         elif type(core_object) is ChCalculations:
-            self.Text: TextInput = TextInput(text=str(core_object.specification), multiline=False, size_hint=(0.8, 0.4), pos_hint={"left": 0.1, "top": 0.2},
-                                               background_color=(0, 0, 0, 0),
-                                               foreground_color=(1, 1, 1, 1))
+            self.Text: TextInput = TextInput(text=str(core_object.specification),
+                                             multiline=False,
+                                             size_hint=(0.8, 0.4),
+                                             pos_hint={"left": 0.1, "top": 0.2},
+                                             background_color=(0, 0, 0, 0),
+                                             foreground_color=(1, 1, 1, 1))
         self.core_object.add_gui(self)
         self.add_widget(self.Text)
         self.add_widget(self.Name)
         self.core_object.save()
 
-    def on_Text(self, *args):
-        self.core_object.rename(self.Text.text)
 
-    def on_change_name(self, instance, pos):
+    def on_change_name(self, instance):
         self.core_object.rename(instance.text)
 
-    def on_change_text(self, instance):
-        pass
 
     def check_click_name(self, pos: tuple):
         if self.Name.collide_point(pos[0], pos[1]):
@@ -86,27 +90,27 @@ class MolFrame(RelativeLayout):
         print("position" + str(self.pos))
         if self.collide_point(touch.pos[0], touch.pos[1]):
             print("touched")
+            touch.push()
+            touch.apply_transform_2d(self.to_local)
             if touch.is_double_tap:
-                x, y = touch.x, touch.y
-                touch.push()
-                touch.apply_transform_2d(self.to_local)
-                print(touch.pos)
                 self.double_tap_events(touch)
-                touch.pop()
+            elif touch.button == 'right':
+                self._make_menu(touch)
+            elif self.check_click_on_menu(touch):
+                super().on_touch_down(touch)
+                self.del_float_windows(touch)
             else:
                 touch.grab(self)
+            touch.pop()
             return True
+        self.del_float_windows(touch)
 
-    def convert_in_dictionary(self):
-        result = dict()
-        result.update({"x": self.pos[0]})
-        result.update({"y": self.pos[1]})
-        return result
-
-    def load(self, config: dict):
-        pass
-
-
+    def check_click_on_menu(self, touch):
+        for child in self.children:
+            if type(child) is bubbleMenuFrame:
+                if child.collide_point(*touch.pos):
+                    return True
+        return False
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
@@ -128,6 +132,24 @@ class MolFrame(RelativeLayout):
     def check_click(self, touch):
         res, _ = self.check_click_name(touch.pos)
         return res
+
+    def convert_in_dictionary(self):
+        result = dict()
+        result.update({"x": self.pos[0]})
+        result.update({"y": self.pos[1]})
+        return result
+
+    def del_float_windows(self, touch):
+        for child in self.children:
+            if type(child) is bubbleMenuFrame:
+                self.remove_widget(child)
+
+    def _make_menu(self, touch):
+        calls = []
+        call = {"name": "None", "call": lambda: print("No calls")}
+        bmenu = bubbleMenuFrame(touch.pos, calls=[call])
+        self.add_widget(bmenu)
+
 
     def _update_bind_objects(self, touch):
         for update in self._update_object:
@@ -151,9 +173,7 @@ class MolFrame(RelativeLayout):
     #     return self._x + self._wight, self._y + self._height / 2
 
 
-
 class MyApp(App):
-
 
     def build(self):
         root = Widget()

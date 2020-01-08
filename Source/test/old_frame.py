@@ -9,7 +9,7 @@ from functools import partial
 from kivy.uix.boxlayout import BoxLayout
 from Source.CanvasSubstance.Molecule import MolFrame
 from kivy.uix.label import Label
-from Source.Menu.bubble_menu import MainMenu
+from Source.Menu.bubble_menu import bubbleMenuFrame
 from Source.Menu.menu import menu
 from kivy.graphics import Line
 
