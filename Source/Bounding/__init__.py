@@ -34,10 +34,10 @@ class Bond(FloatLayout, ):
     dash_offset = NumericProperty(0)
     dashes = ListProperty([])
 
-    def __init__(self, click=None, prev_object = None):
+    def __init__(self, touch=None, prev_object=None):
         super().__init__()
-        click.grab(self)
-        self.left(prev_object)
+        touch.grab(self)
+        self.left = prev_object
 
     def update_left(self, new_pos):
         self.points[-1] = new_pos

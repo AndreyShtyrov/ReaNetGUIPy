@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.graphics import Color, Rectangle, Canvas, ClearBuffers, ClearColor
 from kivy.graphics.fbo import Fbo
 # from kivy.input.provider import touch
+from Source.Bounding import Bond
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from Source.Core.ChCompound import ChCompound
@@ -89,18 +90,12 @@ class MolFrame(RelativeLayout):
         if self.collide_point(touch.pos[0], touch.pos[1]):
             touch.push()
             touch.apply_transform_2d(self.to_local)
-            self.try_click_on_menu(touch)
-            self.del_float_windows(touch)
             if touch.is_double_tap:
                 self.double_tap_events(touch)
-            elif touch.button == 'right':
-                self._make_menu(touch)
             else:
                 touch.grab(self)
-
             touch.pop()
             return True
-        self.del_float_windows(touch)
 
     def try_click_on_menu(self, touch):
         for child in self.children:
@@ -141,11 +136,18 @@ class MolFrame(RelativeLayout):
             if type(child) is bubbleMenuFrame:
                 self.remove_widget(child)
 
-    def _make_menu(self, touch):
+    def create_bond(self, touch):
+        bond = Bond(touch, self)
+
+    def make_menu(self, touch):
         calls = []
-        call = {"name": "None", "call": lambda: print("No calls")}
-        bmenu = bubbleMenuFrame(touch.pos, calls=[call])
-        self.add_widget(bmenu)
+        call = {"name": "New Bond", "call": lambda: print("No calls")}
+        # call = {"name": "New Bond", "call": lambda: self.create_bond(touch)}
+        calls.append(call)
+        call = {"name": "None", "call": lambda: print("No calls1")}
+        calls.append(call)
+        bmenu = bubbleMenuFrame(touch.pos, calls=calls)
+        return bmenu
 
     def _update_bind_objects(self, touch):
         for update in self._update_object:

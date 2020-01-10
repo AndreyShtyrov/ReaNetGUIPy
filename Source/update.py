@@ -1,6 +1,7 @@
 import logging
 from Source.Core import ChCompound
 from kivy.clock import Clock
+from Source.Bounding import Bond
 from kivy.app import App
 from pathlib import Path
 from kivy.uix.widget import Widget
@@ -34,11 +35,27 @@ class MainWidget(Widget):
         self.add_widget(new_sub_frame)
 
     def on_touch_down(self, touch):
-        is_made_sm = super().on_touch_down(touch)
+        check_that_click_was_in_child = super().on_touch_down(touch)
         self.del_float_windows(touch)
-        if self.collide_point(*touch.pos) and not is_made_sm:
-            if touch.button == 'right' and not self._check_clicked_child(touch):
-                self._make_menu(touch)
+        if self.collide_point(*touch.pos):
+            if touch.button == 'right':
+                if check_that_click_was_in_child:
+                    child = self.get_clicked_obj(touch)
+                    if hasattr(child, "make_menu"):
+                        bmenu = child.make_menu(touch)
+                    else:
+                        bmenu = self._make_menu(touch)
+                else:
+                    bmenu = self._make_menu(touch)
+                self.add_widget(bmenu)
+
+
+
+    def get_clicked_obj(self, touch):
+        for child in self.children:
+            if child.collide_point(*touch.pos):
+                return child
+        return None
 
     def _check_clicked_child(self, touch):
         for child in self.children:
@@ -68,7 +85,8 @@ class MainWidget(Widget):
         call = {"name": "New", "call": new_compound}
         calls.append(call)
         menu = bubbleMenuFrame(touch.pos, calls=calls)
-        self.add_widget(menu)
+        return menu
+
 
 
 

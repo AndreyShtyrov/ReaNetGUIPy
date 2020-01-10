@@ -13,6 +13,10 @@ def decorate_functions(func_to_decorate, add_arg):
         return func_to_decorate(add_arg)
     return shell
 
+def lambda_for_call(self, call, touch):
+    pass
+
+
 class bubbleMenu(Bubble):
     def __init__(self, **kwargs):
         dheight = 80
@@ -31,7 +35,7 @@ class bubbleMenuFrame(RelativeLayout):
 
     def __init__(self, pos, **kwargs):
         dheight = 50
-        dweight = 50
+        dweight = 100
         calls = kwargs["calls"]
         ldweight = len(calls) * dweight
         super().__init__(size_hint=(None, None), size=(ldweight, dheight), pos=pos)
