@@ -24,7 +24,7 @@ class ChCompound(data):
 
     def update(self):
         super().update()
-        self.Energy = float(self.gui.Text)
+        self.Energy = float(self.gui.Text.text)
 
 
     def get_left(self):
@@ -42,13 +42,10 @@ class ChCompound(data):
         self.Energy = (sum_Energy - self._zero) *627.5
 
 
-    def setBound(self, other, boundPos):
-        if boundPos == "r":
-            self.rBonds.append(other)
-            other.lBonds.append(self)
-        else:
-            self.lBonds.append(other)
-            other.rBonds.append(self)
+    def setBound(self, other):
+        self.rBonds.append(other)
+        other.lBonds.append(self)
+
 
 
     def save(self):

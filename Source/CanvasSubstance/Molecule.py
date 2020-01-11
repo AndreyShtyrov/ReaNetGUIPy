@@ -43,6 +43,7 @@ class MolFrame(RelativeLayout):
         super().__init__(size_hint=(None, None), width=220, height=80, pos=pos)
         self.core_object = core_object
         self._update_object = []
+        self._bounded_objs = []
 
         self.Name: TextInput = TextInput(text=core_object.Name,
                                         multiline=False,
@@ -84,6 +85,17 @@ class MolFrame(RelativeLayout):
         self.pos = touch.pos
         self._update_bind_objects(touch)
 
+    def make_bound(self, another):
+        self._bounded_objs.append(another)
+        self.core_object.setBound(self.core_object, another.core_object)
+
+    def try_click_on_menu(self, touch):
+        for child in self.children:
+            if type(child) is bubbleMenuFrame:
+                if child.collide_point(*touch.pos):
+                    child.on_touch_down(touch)
+                    self.remove_widget(child)
+
     def on_touch_down(self, touch):
         print("execute MolFrame.on_touch_down")
         print(" Name:     " + str(self.Name.text))
@@ -100,17 +112,9 @@ class MolFrame(RelativeLayout):
             return False
         return False
 
-    def try_click_on_menu(self, touch):
-        for child in self.children:
-            if type(child) is bubbleMenuFrame:
-                if child.collide_point(*touch.pos):
-                    child.on_touch_down(touch)
-                    self.remove_widget(child)
-
     def on_touch_move(self, touch):
         if touch.grab_current is self:
             self.update(touch)
-
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:

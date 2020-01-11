@@ -1,80 +1,95 @@
-from kivy.app import App
 from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
         BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
+import numpy as np
 
-Builder.load_string('''
-<Bond>:
+lstring = '''
+<Bound>:
     canvas:
         Color:
-            rgba: .8, .8, .8, root.alpha_controlline
+            rgba: self.color[0], self.color[1], self.color[2],  self.transparency
         Line:
             points: self.points
+            width: self.linewidth
             close: self.close
-            dash_length: self.dash_length
-            dash_offset: self.dash_offset
-            dashes: self.dashes
-        Color:
-            rgba: 1, .4, .4, root.alpha
-''')
+'''
+Builder.load_string(lstring)
 
+class Node(FloatLayout):
 
-class Bond(FloatLayout):
-    alpha_controlline = NumericProperty(1.0)
-    alpha = NumericProperty(0.5)
-    close = BooleanProperty(False)
-    points = ListProperty([])
-    points2 = ListProperty([])
-    joint = OptionProperty('none', options=('round', 'miter', 'bevel', 'none'))
-    cap = OptionProperty('none', options=('round', 'square', 'none'))
-    linewidth = NumericProperty(10.0)
-    dt = NumericProperty(0)
-    dash_length = NumericProperty(1)
-    dash_offset = NumericProperty(0)
-    dashes = ListProperty([])
-
-    def __init__(self):
-        super().__init__()
-        self._is_first_point = False
-
-
-    def update_left(self, new_pos):
-        self.points[-1] = new_pos
-
-    def update_right(self, new_pos):
-        self.points[0] = new_pos
+    def __init__(self, pos, froze=False):
+        dwight = 10
+        dheight = 10
+        self._active = False
+        self._frozen = froze
+        super(FloatLayout, self).__init__(width=dwight, height=dheight, pos=pos)
 
     def on_touch_down(self, touch):
-        if self._is_first_point:
-
-            if touch.current_grab is self:
-                self.points.append(touch.pos)
-                if bool(self.points):
-                    return "Bind"
+        print("execute Node.on_touch_down")
+        print(" Name:     " + str(self.Name.text))
+        print(" touch pos:" + str(touch.pos))
+        print(" self  pos:" + str(self.pos))
+        if self.collide_point(touch.pos[0], touch.pos[1]):
             if touch.button is "right":
-                self.ungrab(self)
-                return "Bind"
+                self._active = True
+            if self._active and not self._frozen:
+                touch.grab(self)
+        return True
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
-            self.update_left(touch.pos)
-            return True
+            self.pos = touch.pos
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
             touch.ungrab(self)
+            self._active = False
+
+    def get_pos(self):
+        return np.array(list(self.pos))
+
+    def compare_lengths(self, pos1, pos2):
+        len1 = np.linalg.norm(np.array(pos1) - np.array(self.pos))
+        len2 = np.linalg.norm(pos2) - np.array(self.pos)
+        if len1 > len2:
             return True
+        else:
+            return False
 
+class Bound(FloatLayout):
+    transparency = NumericProperty(1.0)
+    color = ListProperty([0.8, 0.8, 0.8])
+    close = BooleanProperty(False)
+    ledt_point = None
+    points = ListProperty()
+    nodes = ListProperty()
+    linewidth = NumericProperty(1.0)
 
+    def __init__(self, rframe, lframe):
+        super().__init__()
+        rframe.make_bound(lframe)
+        rnode_pos = rframe.get_bind_point("r")
+        lnode_pos = lframe.get_bind_point("l")
+        self.nodes.append(rnode_pos, True)
+        self.nodes.append(lnode_pos, True)
+        self.points.append(rnode_pos)
+        self.points.append(lnode_pos)
 
+    def calculate_pos_inserting(self, curr_pos):
+        for i in range(1, len(self.nodes) - 1):
+            if self.nodes[i-1].compare_lengths(self.nodes[i].pos, curr_pos):
+                return i
+        return len(self.nodes) - 1
 
-class TestLineApp(App):
-    def build(self):
-        return Bond()
+    def add_new_node(self, touch):
+        index = self.calculate_pos_inserting(touch.pos)
+        self.nodes.insert(Node(touch.pos), index)
 
+    def on_touch_down(self, touch):
+        print("execute Bound.on_touch_down")
+        print(" pos:  " + str(touch.pos))
+        pass
 
-if __name__ == '__main__':
-    TestLineApp().run()
-
-
+    def make_menu(self):
+        pass
