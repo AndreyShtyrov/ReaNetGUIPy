@@ -1,16 +1,9 @@
-import logging
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.uix.button import Button
-from functools import partial
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.graphics import Line
-from kivy.config import Config
 from Source.CanvasSubstance.Molecule import MolFrame
-from Source.Core import ChProject
-from Source.Core import ChCalculations
+from Source.CalculationWindow.Core import ChProject
+from Source.CalculationWindow.Core import ChCalculations
+from Source.Bounding.Bound import Bound
 from pathlib import Path
 
 from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
@@ -33,7 +26,7 @@ class CalculationFrame(Widget):
 
     def on_touch_up(self, touch):
         grabed = super().on_touch_up(touch)
-        if isinstance(grabed, Bond):
+        if isinstance(grabed, Bound):
             clicked = super().on_touch_down(touch)
             if isinstance(clicked, MolFrame):
                 update = grabed.create(clicked)

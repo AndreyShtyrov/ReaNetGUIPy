@@ -1,19 +1,16 @@
 from kivy.app import App
-from kivy.graphics import Color, Rectangle, Canvas, ClearBuffers, ClearColor
-from kivy.graphics.fbo import Fbo
 # from kivy.input.provider import touch
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
-from Source.Core.ChCompound import ChCompound
-from kivy.properties import StringProperty
-from Source.Core.ChCalculations import ChCalculations
+from Source.CalculationWindow.Core import ChCompound
+from Source.CalculationWindow.Core import ChCalculations
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
-from functools import partial
 from kivy.graphics import Ellipse
 from kivy.graphics import Color
-from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
+from Source.Menu.bubble_menu import bubbleMenuFrame
+
 
 class ellipse_box(FloatLayout):
 

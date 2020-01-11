@@ -1,5 +1,5 @@
 from Source.IO import data
-from Source.Core.ChComponent.ChComponent import ChComponent
+from Source.CalculationWindow.Core import ChComponent
 
 
 class rEnergy():

@@ -1,19 +1,14 @@
 import logging
-from Source.Core import ChCompound
-from kivy.clock import Clock
 from kivy.app import App
 from pathlib import Path
 from kivy.uix.widget import Widget
-from kivy.uix.button import Button
 from Source.Bounding.Bound_pointer import Bound_pointer
 from kivy.uix.boxlayout import BoxLayout
-from Source.Core.ChProject import ChProject
+from Source.CalculationWindow.Core.ChProject import ChProject
 from Source.CanvasSubstance.Molecule import MolFrame
-from kivy.uix.label import Label
 from Source.Bounding.Bound import Bond
 from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
 from Source.Menu.menu import menu
-from kivy.graphics import Line
 from kivy.config import Config
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 

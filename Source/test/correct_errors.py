@@ -1,19 +1,6 @@
-import logging
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.uix.button import Button
-from functools import partial
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
 from Source.CanvasSubstance.Molecule import MolFrame
-from kivy.uix.label import Label
-from kivy.graphics import Line
-from kivy.config import Config
-from Source.Core import ChProject
-from Source.Core import ChCalculations
-from pathlib import Path
-from Source.Bounding import Bond
-
 
 
 class corframe(Widget):
