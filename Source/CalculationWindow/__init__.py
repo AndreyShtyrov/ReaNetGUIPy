@@ -1,8 +1,8 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
 from Source.CanvasSubstance.Molecule import MolFrame
-from Source.CalculationWindow.Core import ChProject
-from Source.CalculationWindow.Core import ChCalculations
+from Source.Core import ChProject
+from Source.Core import ChCalculations
 from Source.Bounding.Bound import Bound
 from pathlib import Path
 

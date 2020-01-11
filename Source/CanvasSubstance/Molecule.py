@@ -3,8 +3,8 @@ from kivy.app import App
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
-from Source.CalculationWindow.Core import ChCompound
-from Source.CalculationWindow.Core import ChCalculations
+from Source.Core import ChCompound
+from Source.Core import ChCalculations
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 from kivy.graphics import Ellipse

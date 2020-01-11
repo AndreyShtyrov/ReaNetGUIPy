@@ -4,9 +4,9 @@ from pathlib import Path
 from kivy.uix.widget import Widget
 from Source.Bounding.Bound_pointer import Bound_pointer
 from kivy.uix.boxlayout import BoxLayout
-from Source.CalculationWindow.Core.ChProject import ChProject
+from Source.Core.ChProject import ChProject
 from Source.CanvasSubstance.Molecule import MolFrame
-from Source.Bounding.Bound import Bond
+from Source.Bounding.Bound import Bound
 from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
 from Source.Menu.menu import menu
 from kivy.config import Config
@@ -72,7 +72,7 @@ class MainWidget(Widget):
             if bound_point.point_is_ready:
                 lframe, rframe = bound_point.get_pointed_objs
                 self.remove_widget(bound_point)
-                self.add_widget(Bond(lframe, rframe))
+                self.add_widget(Bound(lframe, rframe))
         return super().on_touch_move(touch)
 
     def on_touch_move(self, touch):
