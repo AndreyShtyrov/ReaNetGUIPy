@@ -13,9 +13,6 @@ def decorate_functions(func_to_decorate, add_arg):
         return func_to_decorate(add_arg)
     return shell
 
-def lambda_for_call(self, call, touch):
-    pass
-
 
 class bubbleMenu(Bubble):
     def __init__(self, **kwargs):
@@ -27,7 +24,7 @@ class bubbleMenu(Bubble):
         for call in calls:
             # it is need to create lambda function which take 1 argument: self and call delegate
             # otherwise it try to give it to delegate and would fall
-            button = BubbleButton(text=call["name"], on_press=lambda x: call["call"]())
+            button = BubbleButton(text=call["name"], on_press=lambda x, call_=call: call_["call"]())
             self.add_widget(button)
 
 

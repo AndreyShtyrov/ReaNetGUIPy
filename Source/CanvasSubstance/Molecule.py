@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.graphics import Color, Rectangle, Canvas, ClearBuffers, ClearColor
 from kivy.graphics.fbo import Fbo
 # from kivy.input.provider import touch
-from Source.Bounding import Bond
+
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from Source.Core.ChCompound import ChCompound
@@ -86,7 +86,9 @@ class MolFrame(RelativeLayout):
 
     def on_touch_down(self, touch):
         print("execute MolFrame.on_touch_down")
-        print("position" + str(self.pos))
+        print(" Name:     " + str(self.Name.text))
+        print(" touch pos:" + str(touch.pos))
+        print(" self  pos:" + str(self.pos))
         if self.collide_point(touch.pos[0], touch.pos[1]):
             touch.push()
             touch.apply_transform_2d(self.to_local)
@@ -95,7 +97,8 @@ class MolFrame(RelativeLayout):
             else:
                 touch.grab(self)
             touch.pop()
-            return True
+            return False
+        return False
 
     def try_click_on_menu(self, touch):
         for child in self.children:
@@ -107,6 +110,7 @@ class MolFrame(RelativeLayout):
     def on_touch_move(self, touch):
         if touch.grab_current is self:
             self.update(touch)
+
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
@@ -136,8 +140,7 @@ class MolFrame(RelativeLayout):
             if type(child) is bubbleMenuFrame:
                 self.remove_widget(child)
 
-    def create_bond(self, touch):
-        bond = Bond(touch, self)
+
 
     def make_menu(self, touch):
         calls = []

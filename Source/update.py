@@ -1,17 +1,16 @@
 import logging
 from Source.Core import ChCompound
 from kivy.clock import Clock
-from Source.Bounding import Bond
 from kivy.app import App
 from pathlib import Path
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
-from functools import partial
-from kivy.uix.floatlayout import FloatLayout
+from Source.Bounding.Bound_pointer import Bound_pointer
 from kivy.uix.boxlayout import BoxLayout
 from Source.Core.ChProject import ChProject
 from Source.CanvasSubstance.Molecule import MolFrame
 from kivy.uix.label import Label
+from Source.Bounding.Bound import Bond
 from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
 from Source.Menu.menu import menu
 from kivy.graphics import Line
@@ -49,7 +48,15 @@ class MainWidget(Widget):
                     bmenu = self._make_menu(touch)
                 self.add_widget(bmenu)
 
+    def _check_is_bound_pointer(self):
+        for child in self.children:
+            if type(child) is Bound_pointer:
+                return True
 
+    def _get_bound_pointer(self):
+        for child in self.children:
+            if type(child) is Bound_pointer:
+                return child
 
     def get_clicked_obj(self, touch):
         for child in self.children:
@@ -64,7 +71,13 @@ class MainWidget(Widget):
             return False
 
     def on_touch_up(self, touch):
-        grabed = super().on_touch_up(touch)
+        super().on_touch_up(touch)
+        if self._check_is_bound_pointer():
+            bound_point = self._get_bound_pointer()
+            if bound_point.point_is_ready:
+                lframe, rframe = bound_point.get_pointed_objs
+                self.remove_widget(bound_point)
+                self.add_widget(Bond(lframe, rframe))
         return super().on_touch_move(touch)
 
     def on_touch_move(self, touch):
@@ -86,8 +99,6 @@ class MainWidget(Widget):
         calls.append(call)
         menu = bubbleMenuFrame(touch.pos, calls=calls)
         return menu
-
-
 
 
 class MyApp(App):

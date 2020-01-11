@@ -1,62 +1,60 @@
+import logging
+from Source.Core import ChCompound
+from kivy.clock import Clock
 from kivy.app import App
-from kivy.lang import Builder
-from kivy.uix.bubble import Bubble
-from kivy.uix.relativelayout import RelativeLayout
+from pathlib import Path
+from Source.Core.ChProject import ChProject
+from Source.Core.ChCompound import ChCompound
+from kivy.uix.widget import Widget
+from kivy.uix.button import Button
+from functools import partial
 from kivy.uix.floatlayout import FloatLayout
-
-Builder.load_string('''
-<main_window_menu>:
-    size_hint: (None, None)
-    size: (160, 80)
-    BubbleButton:
-        text: 'New'
-        on_press: root.new()
-''')
-
-
-class main_window_menu(Bubble):
-    def __init__(self, **kwargs):
-        super().__init__()
-        self._new = kwargs["new"]
-
-    def new(self):
-        self._new()
+from kivy.uix.boxlayout import BoxLayout
+from Source.Core.ChProject import ChProject
+from Source.CanvasSubstance.Molecule import MolFrame
+from kivy.uix.label import Label
+from kivy.graphics import Line
+from kivy.config import Config
+from kivy.app import App
+from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
+        BooleanProperty
+from kivy.uix.floatlayout import FloatLayout
+from kivy.lang import Builder
+from Source.Bounding.Bound_pointer import Bound_pointer
 
 
-
-class Menu(RelativeLayout):
-
-    def __init__(self, pos, **kwargs):
-        super().__init__(pos=pos)
-        self.show_bubble(**kwargs)
-
-    def show_bubble(self, **kwargs):
-        self.bubb = main_window_menu(**kwargs)
-        self.add_widget(self.bubb)
-
-    def on_touch_down(self, touch):
-        pass
-
-
-class Frame(FloatLayout):
+class Test_Widget(Widget):
     def __init__(self):
         super().__init__()
 
     def on_touch_down(self, touch):
-        print(touch.pos)
-        if touch.button == 'right':
-            menu = Menu(pos=touch.pos, new=self.new_operation)
-            self.add_widget(menu)
-        else:
-            return super(Frame, self).on_touch_down(touch)
+        print("execute Test_Widget.on_touch_down")
+        print(" pos:  " + str(touch.pos))
+        return super().on_touch_down(touch)
 
-    def new_operation(self):
-        print("do something")
 
-class MyApp(App):
+
+
+class TestLineApp(App):
     def build(self):
-        tt = Frame()
-        return tt
+        main_path = Path().cwd()
+        wid = Test_Widget()
+        project = ChProject(main_path)
+        root = BoxLayout(orientation='vertical')
+        root.add_widget(wid)
+        new_sub = project.add_new_compound()
+        Mol1 = MolFrame(new_sub, pos=(200, 300))
+        wid.add_widget(Mol1)
+        new_sub = project.add_new_compound()
+        Mol2 = MolFrame(new_sub, pos=(500, 500))
+        wid.add_widget(Mol2)
+        line = Bound_pointer(wid.children)
+        wid.add_widget(line)
+        return root
+
+
 
 if __name__ == '__main__':
-    MyApp().run()
+    TestLineApp().run()
+
+

@@ -12,7 +12,7 @@ from Source.CanvasSubstance.Molecule import MolFrame
 from Source.Core import ChProject
 from Source.Core import ChCalculations
 from pathlib import Path
-from Source.Bounding import Bond
+
 from Source.Menu.bubble_menu import bubbleMenuFrame, decorate_functions
 
 

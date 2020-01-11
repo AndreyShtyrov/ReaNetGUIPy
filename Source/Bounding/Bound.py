@@ -20,7 +20,7 @@ Builder.load_string('''
 ''')
 
 
-class Bond(FloatLayout, ):
+class Bond(FloatLayout):
     alpha_controlline = NumericProperty(1.0)
     alpha = NumericProperty(0.5)
     close = BooleanProperty(False)
@@ -34,10 +34,10 @@ class Bond(FloatLayout, ):
     dash_offset = NumericProperty(0)
     dashes = ListProperty([])
 
-    def __init__(self, touch=None, prev_object=None):
+    def __init__(self):
         super().__init__()
-        touch.grab(self)
-        self.left = prev_object
+        self._is_first_point = False
+
 
     def update_left(self, new_pos):
         self.points[-1] = new_pos
@@ -46,13 +46,15 @@ class Bond(FloatLayout, ):
         self.points[0] = new_pos
 
     def on_touch_down(self, touch):
-        if touch.current_grab is self:
-            self.points.append(touch.pos)
-            if bool(self.points):
+        if self._is_first_point:
+
+            if touch.current_grab is self:
+                self.points.append(touch.pos)
+                if bool(self.points):
+                    return "Bind"
+            if touch.button is "right":
+                self.ungrab(self)
                 return "Bind"
-        if touch.button is "right":
-            self.ungrab(self)
-            return "Bind"
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
