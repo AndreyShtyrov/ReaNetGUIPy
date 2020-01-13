@@ -1,6 +1,6 @@
 from Source.IO import data
-from Source.Core import ChCompound
-from Source.Core import ChCalculations
+from Source.Core.ChCompound import ChCompound
+from Source.Core.ChCalculations import ChCalculations
 from pathlib import Path
 
 
