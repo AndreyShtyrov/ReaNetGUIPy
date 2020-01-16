@@ -1,6 +1,6 @@
 from kivy.app import App
 # from kivy.input.provider import touch
-
+from Source.Bounding.Bound_pointer import Bound_pointer
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from Source.Core import ChCompound
@@ -143,15 +143,16 @@ class MolFrame(RelativeLayout):
 
 
 
-    def make_menu(self, touch):
+    def make_menu(self, touch, parent):
         calls = []
         call = {"name": "New Bond", "call": lambda: print("No calls")}
         # call = {"name": "New Bond", "call": lambda: self.create_bond(touch)}
         calls.append(call)
         call = {"name": "None", "call": lambda: print("No calls1")}
         calls.append(call)
+
         bmenu = bubbleMenuFrame(touch.pos, calls=calls)
-        return bmenu
+        self.parent.add_widget(bmenu)
 
     def _update_bind_objects(self, touch):
         for update in self._update_object:

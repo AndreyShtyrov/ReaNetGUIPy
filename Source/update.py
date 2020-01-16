@@ -28,20 +28,27 @@ class MainWidget(Widget):
         new_sub_frame = MolFrame(new_sub, pos=touch.pos)
         self.add_widget(new_sub_frame)
 
+    def check_that_click_was_in_child(self, touch):
+        for child in self.children:
+            if child.collide_point(*touch.pos):
+                return True
+        return False
+
+
+
     def on_touch_down(self, touch):
-        check_that_click_was_in_child = super().on_touch_down(touch)
+        _ = super().on_touch_down(touch)
         self.del_float_windows(touch)
         if self.collide_point(*touch.pos):
             if touch.button == 'right':
-                if check_that_click_was_in_child:
+                if self.check_that_click_was_in_child(touch):
                     child = self.get_clicked_obj(touch)
                     if hasattr(child, "make_menu"):
-                        bmenu = child.make_menu(touch)
+                        child.make_menu(touch, self)
                     else:
-                        bmenu = self._make_menu(touch)
+                        self._make_menu(touch)
                 else:
                     bmenu = self._make_menu(touch)
-                self.add_widget(bmenu)
 
     def _check_is_bound_pointer(self):
         for child in self.children:
@@ -86,14 +93,15 @@ class MainWidget(Widget):
             if type(child) is bubbleMenuFrame:
                 self.remove_widget(child)
 
-    def _make_menu(self, touch):
+    def _make_menu(self, touch, additional_methods=[]):
         calls = []
         call = dict()
         new_compound = decorate_functions(self.new_comp, touch)
         call = {"name": "New", "call": new_compound}
         calls.append(call)
+        calls.extend(additional_methods)
         menu = bubbleMenuFrame(touch.pos, calls=calls)
-        return menu
+        self.add_widget(menu)
 
 
 class MyApp(App):

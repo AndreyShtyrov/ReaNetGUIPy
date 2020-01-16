@@ -67,7 +67,3 @@ class Bound_pointer(FloatLayout):
 
     def get_pointed_objs(self):
         return self._pointed_objs[0], self._pointed_objs[1]
-
-
-
-
