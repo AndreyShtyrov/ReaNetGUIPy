@@ -34,6 +34,11 @@ class MainWidget(Widget):
                 return True
         return False
 
+    def create_bound(self, pointer):
+        rframe, lframe = pointer.get_pointed_objs()
+        bound = Bound(rframe, lframe)
+        self.remove_widget(pointer)
+        self.add_widget(bound)
 
 
     def on_touch_down(self, touch):

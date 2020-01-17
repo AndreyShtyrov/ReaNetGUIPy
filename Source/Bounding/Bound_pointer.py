@@ -31,11 +31,9 @@ class Bound_pointer(FloatLayout):
         self.point_is_ready = False
         self._pointed_objs = []
 
-
     def on_touch_down(self, touch):
         print("execute Bound_pointer.on_touch_down")
         print(" pos:  " + str(touch.pos))
-
         if not bool(self.points):
             for point in self.parent.children:
                 if touch.button == "right" and not touch.is_double_tap:
@@ -44,9 +42,9 @@ class Bound_pointer(FloatLayout):
                     if point.is_connectable():
 
                         touch.grab(self)
-                        point = point.get_connector_position(touch)
+                        point_pos = point.get_connector_position(touch)
                         print(" bind to ellipse: " + str(point))
-                        self.points.append(point)
+                        self.points.append(point_pos)
                         self.points.append(touch.pos)
                         self._pointed_objs.append(point)
                         return True
@@ -70,7 +68,7 @@ class Bound_pointer(FloatLayout):
                         self._pointed_objs.append(point)
                         print(" End object pointing")
                         print(" Pointed objs:  " + str(len(self._pointed_objs)))
-
+                        self.parent.create_bound(self)
                         return False
             print(" Restart pointer line")
             touch.ungrab(self)

@@ -21,6 +21,7 @@ class Node(FloatLayout):
     def __init__(self, pos, froze=False):
         dwight = 10
         dheight = 10
+
         self._active = False
         self._frozen = froze
         super(FloatLayout, self).__init__(width=dwight, height=dheight, pos=pos)
@@ -68,11 +69,14 @@ class Bound(FloatLayout):
 
     def __init__(self, rframe, lframe):
         super().__init__()
-        rframe.make_bound(lframe)
-        rnode_pos = rframe.get_bind_point("r")
-        lnode_pos = lframe.get_bind_point("l")
-        self.nodes.append(rnode_pos, True)
-        self.nodes.append(lnode_pos, True)
+        if lframe.pos[0] < rframe.pos[0]:
+            rnode_pos = rframe.lellips
+            lnode_pos = lframe.rellips
+        else:
+            rnode_pos = lframe.lellips
+            lnode_pos = rframe.rellips
+        self.nodes.append(Node(rnode_pos, True))
+        self.nodes.append(Node(lnode_pos, True))
         self.points.append(rnode_pos)
         self.points.append(lnode_pos)
 
@@ -87,9 +91,10 @@ class Bound(FloatLayout):
         self.nodes.insert(Node(touch.pos), index)
 
     def on_touch_down(self, touch):
-        print("execute Bound.on_touch_down")
-        print(" pos:  " + str(touch.pos))
-        pass
+        if self.collide_point(*touch.pos):
+            print("execute Bound.on_touch_down")
+            print(" pos:  " + str(touch.pos))
+            pass
 
     def make_menu(self):
         pass
