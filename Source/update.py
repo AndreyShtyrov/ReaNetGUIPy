@@ -37,6 +37,7 @@ class MainWidget(Widget):
 
 
     def on_touch_down(self, touch):
+        print("touch on mainwindow: " + str(touch.pos))
         _ = super().on_touch_down(touch)
         self.del_float_windows(touch)
         if self.collide_point(*touch.pos):
@@ -44,7 +45,7 @@ class MainWidget(Widget):
                 if self.check_that_click_was_in_child(touch):
                     child = self.get_clicked_obj(touch)
                     if hasattr(child, "make_menu"):
-                        child.make_menu(touch, self)
+                        child.make_menu(touch)
                     else:
                         self._make_menu(touch)
                 else:

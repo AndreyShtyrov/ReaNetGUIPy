@@ -37,29 +37,32 @@ class ellipse_box(FloatLayout):
 class MolFrame(RelativeLayout):
     def __init__(self, core_object, **kwargs):
         pos = kwargs["pos"]
-        super().__init__(size_hint=(None, None), width=220, height=80, pos=pos)
+        super().__init__(size_hint=(None, None), width=130, height=80, pos=pos)
         self.core_object = core_object
         self._update_object = []
         self._bounded_objs = []
+        self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/2)
+        self._lellips = (self.pos[0], self.pos[1] + self.height/2)
+
 
         self.Name: TextInput = TextInput(text=core_object.Name,
                                         multiline=False,
                                         background_color=(0, 0, 0, 0),
-                                        size_hint=(0.8, 0.4),
+                                        size_hint=(1, 0.4),
                                         pos_hint={"left": 0.1, "top": 0.7},
                                         foreground_color=(1, 1, 1, 1),
                                         on_text_validate=self.on_change_name)
         if type(core_object) is ChCompound:
             self.Text: TextInput = TextInput(text=str(core_object.Energy),
                                              multiline=False,
-                                             size_hint=(0.8, 0.4),
+                                             size_hint=(1, 0.4),
                                              pos_hint={"left": 0.1, "top": 0.2},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
         elif type(core_object) is ChCalculations:
             self.Text: TextInput = TextInput(text=str(core_object.specification),
                                              multiline=False,
-                                             size_hint=(0.8, 0.4),
+                                             size_hint=(1, 0.4),
                                              pos_hint={"left": 0.1, "top": 0.2},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
@@ -67,6 +70,53 @@ class MolFrame(RelativeLayout):
         self.add_widget(self.Text)
         self.add_widget(self.Name)
         self.core_object.save()
+
+    def is_connectable(self):
+        return True
+
+    @property
+    def rellips(self):
+        print(" rellips" + str(self.pos) + str((self.width, self.height/3.5)))
+        self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
+        return self._rellips
+
+    @rellips.setter
+    def rellips(self, value):
+        print(" property rellips could not be set by user")
+        self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
+
+    @rellips.deleter
+    def rellips(self):
+        del self._rellips
+
+    @property
+    def lellips(self):
+        print(" lellips" + str(self.pos) + str((self.width, self.height / 3.5)))
+        self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
+        return self._lellips
+
+    @lellips.setter
+    def lellips(self, value):
+        print(" property lellips could not be set by user")
+        self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
+
+    @lellips.deleter
+    def lellips(self):
+        del self._lellips
+
+    def get_connector_position(self, touch):
+        touch.push()
+        touch.apply_transform_2d(self.to_local)
+        print(" touch in: " + str(touch.pos))
+        print(" width is: " + str(self.width))
+        if touch.pos[0] < self.width/2:
+            touch.pop()
+            print(" return lellips")
+            return self.lellips
+        else:
+            touch.pop()
+            print(" return rellips")
+            return self.rellips
 
     def on_change_name(self, instance):
         self.core_object.rename(instance.text)
@@ -86,22 +136,18 @@ class MolFrame(RelativeLayout):
         self._bounded_objs.append(another)
         self.core_object.setBound(self.core_object, another.core_object)
 
-    def try_click_on_menu(self, touch):
-        for child in self.children:
-            if type(child) is bubbleMenuFrame:
-                if child.collide_point(*touch.pos):
-                    child.on_touch_down(touch)
-                    self.remove_widget(child)
 
     def on_touch_down(self, touch):
-        print("execute MolFrame.on_touch_down")
-        print(" Name:     " + str(self.Name.text))
-        print(" touch pos:" + str(touch.pos))
-        print(" self  pos:" + str(self.pos))
+
         if self.collide_point(touch.pos[0], touch.pos[1]):
+            print("execute MolFrame.on_touch_down")
+            print(" Name:     " + str(self.Name.text))
+            print(" touch pos:" + str(touch.pos))
+            print(" self  pos:" + str(self.pos))
             touch.push()
             touch.apply_transform_2d(self.to_local)
             if touch.is_double_tap:
+
                 self.double_tap_events(touch)
             else:
                 touch.grab(self)
@@ -111,7 +157,8 @@ class MolFrame(RelativeLayout):
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
-            self.update(touch)
+            if not touch.button == "right":
+                self.update(touch)
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
@@ -143,9 +190,9 @@ class MolFrame(RelativeLayout):
 
 
 
-    def make_menu(self, touch, parent):
+    def make_menu(self, touch):
         calls = []
-        call = {"name": "New Bond", "call": lambda: print("No calls")}
+        call = {"name": "New Bond", "call": lambda: self.parent.add_widget(Bound_pointer())}
         # call = {"name": "New Bond", "call": lambda: self.create_bond(touch)}
         calls.append(call)
         call = {"name": "None", "call": lambda: print("No calls1")}

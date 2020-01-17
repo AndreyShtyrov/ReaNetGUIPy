@@ -37,7 +37,6 @@ class TestLineApp(App):
         return root
 
 
-
 if __name__ == '__main__':
     TestLineApp().run()
 
