@@ -50,7 +50,6 @@ class Node(FloatLayout):
         if touch.grab_current is self:
             self.pos = touch.pos
 
-
     def on_touch_up(self, touch):
         if touch.grab_current is self:
             touch.ungrab(self)
@@ -81,6 +80,8 @@ class Bound(FloatLayout):
 
     def __init__(self, rframe, lframe):
         super().__init__()
+        self._radius = 10
+        self._limit_range = 15
         lnode, rnode = rframe.bind(lframe, self)
         self.nodes.append(lnode)
         self.nodes.append(rnode)
@@ -89,7 +90,7 @@ class Bound(FloatLayout):
 
     def calculate_pos_inserting(self, curr_pos):
         for i in range(1, len(self.nodes) - 1):
-            if self.nodes[i-1].compare_lengths(self.nodes[i].pos, curr_pos):
+            if self.nodes[i-1].compare_lengths(self.nodes[i].get_pos(), curr_pos.get_pos()):
                 return i
         return len(self.nodes) - 1
 
@@ -108,6 +109,55 @@ class Bound(FloatLayout):
             print(" pos:  " + str(touch.pos))
             if touch.button == "right":
                 self.make_menu(touch)
+
+
+    def _check_that_pos_in_circle(self, pos, center, radius):
+        vector1 = np.array(pos)
+        vector2 = np.array(center)
+        if np.linalg.norm(vector2-vector1) < radius:
+            return True
+        return False
+
+    def exclude_begin_end_nodes(self, pos):
+        if not self._check_that_pos_in_circle(pos, self.points[0]):
+            if not self._check_that_pos_in_circle(pos, self.points[-1]):
+                return True
+        return False
+
+
+
+    def collide_point(self, x, y):
+        pos = (x, y)
+        if self.exclude_begin_end_nodes(pos):
+            return False
+        for i in range(1, len(self.points)):
+            if self.check_is_pos_in_range_of_line(pos, self.points[i], self.points[i - 1]):
+                return True
+        return False
+
+
+    def check_is_pos_in_range_of_line(self, pos, point1, point2):
+        if point1[0] == point2[0]:
+            if point2[1] > point1[1]:
+                if point2[1] + self._limit_range > pos[1] > point1[1] - self._limit_range:
+                    return True
+            else:
+                if point2[1] - self._limit_range < pos[1] < point2[1] + self._limit_range:
+                    return True
+
+        y0 = self._calculate_y_by_points_and_x(pos[0], point1, point2)
+        if y0 + self._limit_range > pos[1] > y0 - self._limit_range:
+            return True
+        return False
+
+
+    def _calculate_y_by_points_and_x(self, x, point1, point2):
+        if np.abs(point1[1] - point2[1]) < 0.01:
+            return point1[0]
+        y = ((x - point1[0]) / (point2[0] - point1[0])) * (point2[1] - point1[1])
+        y = y + point1[1]
+        return y
+
 
     def make_menu(self, touch):
         calls = []
