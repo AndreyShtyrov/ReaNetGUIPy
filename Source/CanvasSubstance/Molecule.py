@@ -78,8 +78,12 @@ class MolFrame(RelativeLayout):
         self.add_widget(self.Name)
         self.core_object.save()
 
+    def add_binded_objs(self, binded_obj):
+        self._binded_objs.append(binded_obj)
+
     def bind(self, other, bound):
-        self._binded_objs.append(bound)
+        self.add_binded_objs(bound)
+        other.add_binded_objs(bound)
         if self.pos[0] > other.pos[0]:
             rnode = self.lellips
             lnode = other.rellips
