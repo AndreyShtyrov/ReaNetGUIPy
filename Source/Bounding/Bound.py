@@ -25,7 +25,7 @@ class Node(FloatLayout):
         self._active = False
         self._froze = froze
         if self._froze:
-            super().__init__(size_hint=(0.5, 0.5),
+            super().__init__(size_hint=(0.05, 0.05),
                              pos_hint={"left": pos[0], "top": pos[1]})
         else:
             super().__init__(width=dwight,

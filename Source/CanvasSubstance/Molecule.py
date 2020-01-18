@@ -44,7 +44,7 @@ class MolFrame(RelativeLayout):
         self._binded_objs = []
         # _rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
         # _lellips = (self.pos[0], self.pos[1] + self.height/3.5)
-        _rellips = (0.05, 0.5)
+        _rellips = (0.85, 0.5)
         _lellips = (0.05, 0.5)
         self.rellips = Node(_rellips, froze=True)
         self.lellips = Node(_lellips, froze=True)
@@ -54,21 +54,21 @@ class MolFrame(RelativeLayout):
                                         multiline=False,
                                         background_color=(0, 0, 0, 0),
                                         size_hint=(1, 0.4),
-                                        pos_hint={"left": 0.1, "top": 0.7},
+                                        pos_hint={"left": 0.1, "top": 1},
                                         foreground_color=(1, 1, 1, 1),
                                         on_text_validate=self.on_change_name)
         if type(core_object) is ChCompound:
             self.Text: TextInput = TextInput(text=str(core_object.Energy),
                                              multiline=False,
                                              size_hint=(1, 0.4),
-                                             pos_hint={"left": 0.1, "top": 0.2},
+                                             pos_hint={"left": 0.1, "top": 0.45},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
         elif type(core_object) is ChCalculations:
             self.Text: TextInput = TextInput(text=str(core_object.specification),
                                              multiline=False,
                                              size_hint=(1, 0.4),
-                                             pos_hint={"left": 0.1, "top": 0.2},
+                                             pos_hint={"left": 0.1, "top": 0.45},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
         self.core_object.add_gui(self)
@@ -126,6 +126,8 @@ class MolFrame(RelativeLayout):
         touch.apply_transform_2d(self.to_local)
         print(" rellips in:" + str(self.rellips.pos))
         print(" lellips in:" + str(self.lellips.pos))
+        print(" Name in   :" + str(self.Name.pos))
+        print(" Text in   :" + str(self.Text.pos))
         print(" touch in: " + str(touch.pos))
         print(" width is: " + str(self.width))
         if touch.pos[0] < self.width/2:
