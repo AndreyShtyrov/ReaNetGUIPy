@@ -270,6 +270,26 @@ if __name__ == '__main__':
     print(mode)
 
 
+class TestLineApp(App):
+    def build(self):
+        main_path = Path().cwd()
+        wid = Test_Widget()
+        project = ChProject(main_path)
+        root = BoxLayout(orientation='vertical')
+        root.add_widget(wid)
+        new_sub = project.add_new_compound()
+        Mol1 = MolFrame(new_sub, pos=(200, 300))
+        wid.add_widget(Mol1)
+        new_sub = project.add_new_compound()
+        Mol2 = MolFrame(new_sub, pos=(500, 500))
+        wid.add_widget(Mol2)
+        line = Bound_pointer(wid.children)
+        wid.add_widget(line)
+        return root
+
+
+if __name__ == '__main__':
+    TestLineApp().run()
 
 
 
