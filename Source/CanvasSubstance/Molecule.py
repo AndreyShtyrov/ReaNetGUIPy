@@ -40,10 +40,7 @@ class MolFrame(RelativeLayout):
         pos = kwargs["pos"]
         super().__init__(size_hint=(None, None), width=130, height=80, pos=pos)
         self.core_object = core_object
-
         self._binded_objs = []
-        # _rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
-        # _lellips = (self.pos[0], self.pos[1] + self.height/3.5)
         _rellips = (0.85, 0.5)
         _lellips = (0.05, 0.5)
         self.rellips = Node(_rellips, froze=True)
@@ -94,36 +91,6 @@ class MolFrame(RelativeLayout):
 
     def is_connectable(self):
         return True
-
-    # @property
-    # def rellips(self):
-    #     print(" rellips" + str(self.pos) + str((self.width, self.height/3.5)))
-    #     self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
-    #     return self._rellips
-    #
-    # @rellips.setter
-    # def rellips(self, value):
-    #     print(" property rellips could not be set by user")
-    #     self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
-    #
-    # @rellips.deleter
-    # def rellips(self):
-    #     del self._rellips
-    #
-    # @property
-    # def lellips(self):
-    #     print(" lellips" + str(self.pos) + str((self.width, self.height / 3.5)))
-    #     self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
-    #     return self._lellips
-    #
-    # @lellips.setter
-    # def lellips(self, value):
-    #     print(" property lellips could not be set by user")
-    #     self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
-    #
-    # @lellips.deleter
-    # def lellips(self):
-    #     del self._lellips
 
     def get_connector_position(self, touch):
         touch.push()

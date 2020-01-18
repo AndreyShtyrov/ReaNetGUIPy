@@ -34,28 +34,27 @@ class Node(FloatLayout):
 
 
 
+    def on_touch_down(self, touch):
+        print("execute Node.on_touch_down")
+        print(" Name:     " + str(self.Name.text))
+        print(" touch pos:" + str(touch.pos))
+        print(" self  pos:" + str(self.pos))
+        if self.collide_point(touch.pos[0], touch.pos[1]):
+            if touch.button is "right":
+                self._active = True
+            if self._active and not self._frozen:
+                touch.grab(self)
+        return True
 
-    # def on_touch_down(self, touch):
-    #     print("execute Node.on_touch_down")
-    #     print(" Name:     " + str(self.Name.text))
-    #     print(" touch pos:" + str(touch.pos))
-    #     print(" self  pos:" + str(self.pos))
-    #     if self.collide_point(touch.pos[0], touch.pos[1]):
-    #         if touch.button is "right":
-    #             self._active = True
-    #         if self._active and not self._frozen:
-    #             touch.grab(self)
-    #     return True
-    #
-    # def on_touch_move(self, touch):
-    #     if touch.grab_current is self:
-    #         self.pos = touch.pos
-    #     return super().on_touch_move(touch)
-    #
-    # def on_touch_up(self, touch):
-    #     if touch.grab_current is self:
-    #         touch.ungrab(self)
-    #         self._active = False
+    def on_touch_move(self, touch):
+        if touch.grab_current is self:
+            self.pos = touch.pos
+
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            touch.ungrab(self)
+            self._active = False
 
     def get_pos(self):
         if self._froze:
