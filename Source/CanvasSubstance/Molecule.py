@@ -54,21 +54,21 @@ class MolFrame(RelativeLayout):
                                         multiline=False,
                                         background_color=(0, 0, 0, 0),
                                         size_hint=(1, 0.4),
-                                        pos_hint={"left": 0.1, "top": 1},
+                                        pos_hint={"right": 0.1, "top": 1},
                                         foreground_color=(1, 1, 1, 1),
                                         on_text_validate=self.on_change_name)
         if type(core_object) is ChCompound:
             self.Text: TextInput = TextInput(text=str(core_object.Energy),
                                              multiline=False,
                                              size_hint=(1, 0.4),
-                                             pos_hint={"left": 0.1, "top": 0.45},
+                                             pos_hint={"right": 0.1, "top": 0.45},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
         elif type(core_object) is ChCalculations:
             self.Text: TextInput = TextInput(text=str(core_object.specification),
                                              multiline=False,
                                              size_hint=(1, 0.4),
-                                             pos_hint={"left": 0.1, "top": 0.45},
+                                             pos_hint={"right": 0.1, "top": 0.45},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
         self.core_object.add_gui(self)

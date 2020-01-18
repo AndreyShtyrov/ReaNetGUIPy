@@ -11,16 +11,17 @@ class Node(FloatLayout):
         dheight = 10
         self._active = False
         self._froze = froze
+        print(" Node pos_hint: " + str(pos))
         super().__init__(size_hint=(0.05, 0.05),
-                             pos_hint={"left": pos[0], "top": pos[1]})
+                             pos_hint={"right": pos[0], "top": pos[1]})
 
 class MyCustomRL(RelativeLayout):
     def __init__(self, **kwargs):
         pos = kwargs["pos"]
         super().__init__(size_hint=(None, None), width=130, height=80, pos=pos)
 
-        _rellips = (0.95, 0.5)
-        _lellips = (0.05, 0.5)
+        _rellips = (0.8, 0.5)
+        _lellips = (0.1, 0.5)
         self.rellips = Node(_rellips, froze=True)
         self.lellips = Node(_lellips, froze=True)
 
