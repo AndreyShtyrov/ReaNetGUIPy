@@ -9,6 +9,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 from kivy.graphics import Ellipse
 from kivy.graphics import Color
+from Source.Bounding.Bound import Node
 from Source.Menu.bubble_menu import bubbleMenuFrame
 
 
@@ -39,10 +40,14 @@ class MolFrame(RelativeLayout):
         pos = kwargs["pos"]
         super().__init__(size_hint=(None, None), width=130, height=80, pos=pos)
         self.core_object = core_object
-        self._update_object = []
-        self._bounded_objs = []
-        self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/2)
-        self._lellips = (self.pos[0], self.pos[1] + self.height/2)
+
+        self._binded_objs = []
+        # _rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
+        # _lellips = (self.pos[0], self.pos[1] + self.height/3.5)
+        _rellips = (0.05, 0.5)
+        _lellips = (0.05, 0.5)
+        self.rellips = Node(_rellips, froze=True)
+        self.lellips = Node(_lellips, froze=True)
 
 
         self.Name: TextInput = TextInput(text=core_object.Name,
@@ -67,56 +72,70 @@ class MolFrame(RelativeLayout):
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
         self.core_object.add_gui(self)
+        self.add_widget(self.lellips)
+        self.add_widget(self.rellips)
         self.add_widget(self.Text)
         self.add_widget(self.Name)
         self.core_object.save()
 
+    def bind(self, other, bound):
+        self._binded_objs.append(bound)
+        if self.pos[0] > other.pos[0]:
+            rnode = self.lellips
+            lnode = other.rellips
+        else:
+            rnode = other.lellips
+            lnode = self.rellips
+        return lnode, rnode
+
     def is_connectable(self):
         return True
 
-    @property
-    def rellips(self):
-        print(" rellips" + str(self.pos) + str((self.width, self.height/3.5)))
-        self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
-        return self._rellips
-
-    @rellips.setter
-    def rellips(self, value):
-        print(" property rellips could not be set by user")
-        self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
-
-    @rellips.deleter
-    def rellips(self):
-        del self._rellips
-
-    @property
-    def lellips(self):
-        print(" lellips" + str(self.pos) + str((self.width, self.height / 3.5)))
-        self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
-        return self._lellips
-
-    @lellips.setter
-    def lellips(self, value):
-        print(" property lellips could not be set by user")
-        self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
-
-    @lellips.deleter
-    def lellips(self):
-        del self._lellips
+    # @property
+    # def rellips(self):
+    #     print(" rellips" + str(self.pos) + str((self.width, self.height/3.5)))
+    #     self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
+    #     return self._rellips
+    #
+    # @rellips.setter
+    # def rellips(self, value):
+    #     print(" property rellips could not be set by user")
+    #     self._rellips = (self.pos[0] + self.width, self.pos[1] + self.height/3.5)
+    #
+    # @rellips.deleter
+    # def rellips(self):
+    #     del self._rellips
+    #
+    # @property
+    # def lellips(self):
+    #     print(" lellips" + str(self.pos) + str((self.width, self.height / 3.5)))
+    #     self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
+    #     return self._lellips
+    #
+    # @lellips.setter
+    # def lellips(self, value):
+    #     print(" property lellips could not be set by user")
+    #     self._lellips = (self.pos[0], self.pos[1] + self.height / 3.5)
+    #
+    # @lellips.deleter
+    # def lellips(self):
+    #     del self._lellips
 
     def get_connector_position(self, touch):
         touch.push()
         touch.apply_transform_2d(self.to_local)
+        print(" rellips in:" + str(self.rellips.pos))
+        print(" lellips in:" + str(self.lellips.pos))
         print(" touch in: " + str(touch.pos))
         print(" width is: " + str(self.width))
         if touch.pos[0] < self.width/2:
             touch.pop()
             print(" return lellips")
-            return self.lellips
+            return self.to_parent(*self.lellips.pos)
         else:
             touch.pop()
             print(" return rellips")
-            return self.rellips
+            return self.to_parent(*self.rellips.pos)
 
     def on_change_name(self, instance):
         self.core_object.rename(instance.text)
@@ -132,9 +151,7 @@ class MolFrame(RelativeLayout):
         self.pos = touch.pos
         self._update_bind_objects(touch)
 
-    def make_bound(self, another):
-        self._bounded_objs.append(another)
-        self.core_object.setBound(self.core_object, another.core_object)
+
 
 
     def on_touch_down(self, touch):
@@ -202,8 +219,8 @@ class MolFrame(RelativeLayout):
         self.parent.add_widget(bmenu)
 
     def _update_bind_objects(self, touch):
-        for update in self._update_object:
-            update(self, touch)
+        for binded_obj in self._binded_objs:
+            binded_obj.update(touch)
 
 
 

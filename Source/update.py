@@ -27,6 +27,7 @@ class MainWidget(Widget):
         new_sub = self.project.add_new_compound()
         new_sub_frame = MolFrame(new_sub, pos=touch.pos)
         self.add_widget(new_sub_frame)
+        print(" MolFrame was created")
 
     def check_that_click_was_in_child(self, touch):
         for child in self.children:
@@ -39,6 +40,7 @@ class MainWidget(Widget):
         bound = Bound(rframe, lframe)
         self.remove_widget(pointer)
         self.add_widget(bound)
+
 
 
     def on_touch_down(self, touch):
