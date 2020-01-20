@@ -36,19 +36,18 @@ class Node(FloatLayout):
 
     def on_touch_down(self, touch):
         print("execute Node.on_touch_down")
-        print(" Name:     " + str(self.Name.text))
         print(" touch pos:" + str(touch.pos))
         print(" self  pos:" + str(self.pos))
         if self.collide_point(touch.pos[0], touch.pos[1]):
-            if touch.button is "right":
-                self._active = True
-            if self._active and not self._frozen:
+            if not self._froze:
                 touch.grab(self)
-        return True
+        return False
 
     def on_touch_move(self, touch):
-        if touch.grab_current is self:
+        if touch.grab_current is self and not self._froze:
             self.pos = touch.pos
+            self.parent.update(touch)
+
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
@@ -59,11 +58,11 @@ class Node(FloatLayout):
         if self._froze:
             return self.parent.to_parent(*self.pos)
         else:
-            return self.pos
+            return tuple(self.pos)
 
     def compare_lengths(self, pos1, pos2):
-        len1 = np.linalg.norm(np.array(pos1) - np.array(self.pos))
-        len2 = np.linalg.norm(pos2) - np.array(self.pos)
+        len1 = np.linalg.norm(np.array(pos1) - np.array(self.get_pos()))
+        len2 = np.linalg.norm(np.array(pos2) - np.array(self.get_pos()))
         if len1 > len2:
             return True
         else:
@@ -74,6 +73,8 @@ class Bound(FloatLayout):
     color = ListProperty([0.8, 0.8, 0.8])
     close = BooleanProperty(False)
     ledt_point = None
+    _right_x: int = 0
+    _left_x: int = 1000000000
     points = ListProperty()
     nodes = ListProperty()
     linewidth = NumericProperty(1.0)
@@ -89,17 +90,18 @@ class Bound(FloatLayout):
 
 
     def calculate_pos_inserting(self, curr_pos):
-        for i in range(1, len(self.nodes) - 1):
-            if self.nodes[i-1].compare_lengths(self.nodes[i].get_pos(), curr_pos.get_pos()):
+        for i in range(1, len(self.nodes)):
+            if self.nodes[i-1].compare_lengths(self.nodes[i].get_pos(), curr_pos):
                 return i
-        return len(self.nodes) - 1
+        return len(self.nodes)
 
     def add_new_node(self, touch):
         index = self.calculate_pos_inserting(touch.pos)
         node = Node(touch.pos)
+        x = node.get_pos()[0]
         self.nodes.insert(index, node)
         self.points.insert(index, Node.pos)
-        self.parent.add_widget()
+        self.add_widget(node)
         self.rebuild()
 
 
@@ -109,6 +111,8 @@ class Bound(FloatLayout):
             print(" pos:  " + str(touch.pos))
             if touch.button == "right":
                 self.make_menu(touch)
+            else:
+                super().on_touch_down(touch)
 
 
     def _check_that_pos_in_circle(self, pos, center, radius):
@@ -118,32 +122,33 @@ class Bound(FloatLayout):
             return True
         return False
 
+
     def exclude_begin_end_nodes(self, pos):
-        if not self._check_that_pos_in_circle(pos, self.points[0]):
-            if not self._check_that_pos_in_circle(pos, self.points[-1]):
+        if not self._check_that_pos_in_circle(pos, self.points[0], 15):
+            if not self._check_that_pos_in_circle(pos, self.points[-1], 15):
                 return True
         return False
 
 
-
     def collide_point(self, x, y):
-        pos = (x, y)
-        if self.exclude_begin_end_nodes(pos):
-            return False
-        for i in range(1, len(self.points)):
-            if self.check_is_pos_in_range_of_line(pos, self.points[i], self.points[i - 1]):
-                return True
+        if self._left_x < x < self._right_x:
+            pos = (x, y)
+            if self.exclude_begin_end_nodes(pos):
+                for i in range(1, len(self.points)):
+                    if self.check_is_pos_in_range_of_line(pos, self.points[i], self.points[i - 1]):
+                        return True
         return False
 
 
     def check_is_pos_in_range_of_line(self, pos, point1, point2):
-        if point1[0] == point2[0]:
+        if np.abs(point1[0] - point2[0]) < 0.001 and (np.abs(pos[0] - point2[0]) < self._limit_range):
             if point2[1] > point1[1]:
                 if point2[1] + self._limit_range > pos[1] > point1[1] - self._limit_range:
                     return True
             else:
-                if point2[1] - self._limit_range < pos[1] < point2[1] + self._limit_range:
+                if point1[1] - self._limit_range > pos[1] > point2[1] + self._limit_range:
                     return True
+            return False
 
         y0 = self._calculate_y_by_points_and_x(pos[0], point1, point2)
         if y0 + self._limit_range > pos[1] > y0 - self._limit_range:
@@ -154,14 +159,18 @@ class Bound(FloatLayout):
     def _calculate_y_by_points_and_x(self, x, point1, point2):
         if np.abs(point1[1] - point2[1]) < 0.01:
             return point1[0]
-        y = ((x - point1[0]) / (point2[0] - point1[0])) * (point2[1] - point1[1])
+        try:
+            y = ((x - point1[0]) / (point2[0] - point1[0])) * (point2[1] - point1[1])
+        except ZeroDivisionError:
+            print(" It awkwared but here division on zero is " + str((point2[0] - point1[0])))
+            exit(1)
         y = y + point1[1]
         return y
 
 
     def make_menu(self, touch):
         calls = []
-        call = {"name": "New Node", "call": lambda: self.add_new_node(touch.pos)}
+        call = {"name": "New Node", "call": lambda: self.add_new_node(touch)}
         calls = [call]
         bmenu = bubbleMenuFrame(touch.pos, calls=calls)
         self.parent.add_widget(bmenu)
@@ -183,5 +192,10 @@ class Bound(FloatLayout):
     def rebuild(self):
         points = []
         for node in self.nodes:
+            x = node.get_pos()[0]
+            if x < self._left_x:
+                self._left_x = x
+            elif x > self._right_x:
+                self._right_x = x
             points.append(node.get_pos())
         self.points = points

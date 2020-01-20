@@ -49,6 +49,7 @@ class MainWidget(Widget):
         self.del_float_windows(touch)
         if self.collide_point(*touch.pos):
             if touch.button == 'right':
+                self._del_pointer()
                 if self.check_that_click_was_in_child(touch):
                     child = self.get_clicked_obj(touch)
                     if hasattr(child, "make_menu"):
@@ -57,6 +58,11 @@ class MainWidget(Widget):
                         self._make_menu(touch)
                 else:
                     bmenu = self._make_menu(touch)
+
+    def _del_pointer(self):
+        for child in self.children[:]:
+            if type(child) is Bound_pointer:
+                self.remove_widget(child)
 
     def _check_is_bound_pointer(self):
         for child in self.children:
@@ -97,7 +103,7 @@ class MainWidget(Widget):
             redrawing.points = points
 
     def del_float_windows(self, touch):
-        for child in self.children:
+        for child in self.children[:]:
             if type(child) is bubbleMenuFrame:
                 self.remove_widget(child)
 
