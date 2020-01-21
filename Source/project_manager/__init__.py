@@ -9,12 +9,10 @@ import json
 import os
 
 
-
-
 class SaveDialog(FloatLayout):
     path = ObjectProperty(None)
     rootpath = ObjectProperty(None)
-    filechooser : FileChooserListView = ObjectProperty(None)
+
 
     def __init__(self, **kwargs):
         self.project = Path(kwargs["rootpath"])
@@ -44,10 +42,11 @@ class SaveDialog(FloatLayout):
             if y > self.pos[1] + (self.height * 0.8):
                 touch.grab(self)
                 print("grab")
+            super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
-            self.parent.parent.parent.parent.pos = touch.pos
+            self.parent.parent.parent.pos = touch.pos
             print("move")
 
     def on_touch_up(self, touch):
@@ -63,16 +62,19 @@ class SaveDialog(FloatLayout):
         return path
 
 
-Factory.register('SaveDialog', cls=SaveDialog)
 
 
 class Editor(App):
 
     def build(self):
         wid = FloatLayout()
-        content = SaveDialog(path=os.getcwd(), rootpath=os.getcwd())
-        wid._popup = Popup(title="Project", content=content, auto_dismiss=False,
-                            size_hint=(0.3, 0.5), pos_hint={"x": 0.7, "top": 0.7})
+        content = SaveDialog(path=os.getcwd(),
+                             rootpath=os.getcwd())
+        wid._popup = Popup(title="Project",
+                            content=content,
+                            auto_dismiss=False,
+                            size_hint=(0.3, 0.5),
+                            pos_hint={"x": 0.7, "top": 0.7})
         wid._popup.open()
         return wid
 

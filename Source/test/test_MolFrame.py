@@ -29,13 +29,13 @@ class MyCustomRL(RelativeLayout):
                                         multiline=False,
                                         background_color=(0, 0, 0, 0),
                                         size_hint=(1, 0.4),
-                                        pos_hint={"left": 0.1, "top": 0.9},
+                                        pos_hint={"x": 0.1, "top": 0.9},
                                         foreground_color=(1, 1, 1, 1),
                                         )
         self.Text: TextInput = TextInput(text="Text",
                                              multiline=False,
                                              size_hint=(1, 0.4),
-                                             pos_hint={"left": 0.1, "top": 0.4},
+                                             pos_hint={"x": 0.1, "top": 0.4},
                                              background_color=(0, 0, 0, 0),
                                              foreground_color=(1, 1, 1, 1))
 
