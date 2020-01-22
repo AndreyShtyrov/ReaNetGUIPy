@@ -111,7 +111,7 @@ class MolFrame(RelativeLayout):
             return self.to_parent(*self.rellips.pos)
 
     def on_change_name(self, instance):
-        self.core_object.rename(instance.text)
+        self.core_object.update()
 
     def check_click_name(self, pos: tuple):
         if self.Name.collide_point(pos[0], pos[1]):

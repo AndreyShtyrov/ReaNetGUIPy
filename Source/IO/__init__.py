@@ -72,7 +72,10 @@ class data():
 
     def update(self):
         if hasattr(self, 'gui'):
-            self.Name = self.gui.Name.text
+            new_name = self.gui.Name.text
+            if self.Name != new_name:
+                self.rename(new_name)
+
 
 
     def add_gui(self, gui):
