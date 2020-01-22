@@ -61,13 +61,13 @@ class MainWidget(Widget):
         path = Path(path_to_dir)
         self.project = ChProject(path, file_name)
         self._project_loader.dismiss()
-        self.update = Clock.schedule_once(self.project.update, 2)
+        self.update = Clock.schedule_interval(self.project.update, 20)
 
     def load_project(self, path_to_dir, path_to_file):
         path = Path(path_to_dir)
         self.project = ChProject(path)
         self._project_loader.dismiss()
-        self.update = Clock.schedule_once(self.project.update, 2)
+        self.update = Clock.schedule_interval(self.project.update, 20)
 
     def on_touch_down(self, touch):
         print("touch on mainwindow: " + str(touch.pos))

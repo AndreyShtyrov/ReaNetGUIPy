@@ -72,7 +72,7 @@ class data():
 
     def update(self):
         if hasattr(self, 'gui'):
-            self.Name = self.gui.Name
+            self.Name = self.gui.Name.text
 
 
     def add_gui(self, gui):
