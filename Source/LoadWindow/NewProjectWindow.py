@@ -5,6 +5,7 @@ from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 from pathlib import Path
 from kivy.base import Builder
+from Source.IO import data
 
 
 NewDialogString = """
@@ -16,7 +17,7 @@ NewDialogString = """
 
         TextInput:
             id: text_input
-            text: "New Project"
+            text: root.default_name
             pos_hint: root.text_input_pos
             size_hint: root.text_input_size
 
@@ -26,7 +27,7 @@ NewDialogString = """
             text: "Create"
             pos_hint: root.button_create_pos
             size_hint: root.button_size
-            on_release: root.createfile(root.path, text_input.text)
+            on_release: root.createfile(root.path, root.search_avaliable_name(text_input.text))
         
         Button:
             id: cancelbutton
@@ -44,6 +45,7 @@ class CreateDialog(FloatLayout):
     path = ObjectProperty(None)
     cancel = ObjectProperty(None)
     createfile = ObjectProperty(None)
+    default_name = ObjectProperty("New Project")
 
 
     def __init__(self, **kwargs):
@@ -55,7 +57,13 @@ class CreateDialog(FloatLayout):
         self.button_cancel_pos = {"x": 0.05, "y": 0.1}
         self.text_input_pos = {"x": 0.05, "y": 0.7}
         self.text_input_size = (0.9, 0.1)
+        self.default_name = self.search_avaliable_name(self.default_name)
         super().__init__()
+
+
+    def search_avaliable_name(self, name):
+        name = data._search_aval_name(self.path, name)
+        return str(name)
 
 
 

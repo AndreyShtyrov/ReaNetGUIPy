@@ -17,6 +17,7 @@ class ChProject(data):
 
 
     def update(self, *kvargs):
+        print(" update all tree of project")
         if not self._is_updating:
             self._is_updating = True
             for compound in self.compounds:

@@ -129,8 +129,11 @@ class data():
             return False
         return True
 
-    def _search_aval_name(self, file_location, name):
+    @staticmethod
+    def _search_aval_name(file_location: Union[str, Path], name):
         value = -1
+        if type(file_location) is str:
+            file_location = Path(file_location)
         for component in file_location.iterdir():
             if name in component.name:
                 if name == component.name:
