@@ -139,7 +139,11 @@ class data():
                 if name == component.name:
                     value = 0
                 else:
-                    t = int(component.name.split(name)[-1])
+                    try:
+                        t = int(component.name.split(name)[-1])
+                    except ValueError:
+                        t = component.name.split(name)[-1]
+                        t = int(t.split(".")[0])
                     if t > value:
                         value = t
         acc = value + 1
