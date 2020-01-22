@@ -18,6 +18,9 @@ class ChCalculations(data):
         self.post_processing: []
         self.save()
 
+    def get_hash(self):
+        return self.directory
+
     def update(self):
         super().update()
         self.specification = self.gui.Text

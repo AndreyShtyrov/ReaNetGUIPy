@@ -19,6 +19,9 @@ class ChComponent(data):
 
 
 
+    def get_hash(self):
+        return self.directory
+
     def set_energy(self, energy):
         self.Energy = energy
 

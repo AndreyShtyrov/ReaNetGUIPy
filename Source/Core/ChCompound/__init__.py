@@ -26,6 +26,8 @@ class ChCompound(data):
         super().update()
         self.Energy = float(self.gui.Text.text)
 
+    def get_hash(self):
+        self.directory
 
     def get_left(self):
         for bounded in self.lBonds:

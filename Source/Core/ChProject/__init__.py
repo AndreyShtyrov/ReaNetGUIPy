@@ -16,6 +16,11 @@ class ChProject(data):
         self._is_updating = False
 
 
+
+
+    def get_hash(self):
+        return 1
+
     def update(self, *kvargs):
         print(" update all tree of project")
         if not self._is_updating:

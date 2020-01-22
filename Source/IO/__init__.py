@@ -200,3 +200,36 @@ class data():
             self.directory.mkdir(parents=True, exist_ok=True)
         else:
             directory.mkdir(parents=True, exist_ok=True)
+
+class hash_table():
+    _hash_tables: list
+    _hash_links: list
+    _init: bool
+
+    def __init__(self, parent):
+        self._hash_links = parent
+        self._hash_tables = parent.get_hash()
+        self._init = True
+
+    def get_by_hash(self, input_hash):
+        for i in range(len(self._hash_tables)):
+            if input_hash == self._hash_tables[i]:
+                return self._hash_links[i]
+
+    def load_add_item(self, item):
+        self._hash_tables.append(item.get_hash())
+        self._hash_links.append(item)
+
+    def next_hash(self):
+        for _hash in self._hash_tables:
+            yield _hash
+
+    
+
+    @staticmethod
+    def load_from_list(parent, input_list):
+        obj = hash_table(parent)
+        obj._init = False
+        obj._hash_tables.extend(input_list)
+        return obj
+
