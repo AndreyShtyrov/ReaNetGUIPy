@@ -20,9 +20,13 @@ class MainWidget(Widget):
         content = LoadDialog(default_path=default_path,
                              loadfile=self.load_project,
                              new=self.new_project,
-                             cancel=self.cancel_load)
+                             cancel=self.cancel_load,
+                             )
         self._project_loader = Popup(title="Load Project",
-                                     content=content)
+                                     content=content,
+                                     size_hint=(0.8, 0.8),
+                                     pos_hint={"x": 0.05, "top": 0.8}
+                                     )
         self._project_loader.open()
         super().__init__()
         self.selected_object = None

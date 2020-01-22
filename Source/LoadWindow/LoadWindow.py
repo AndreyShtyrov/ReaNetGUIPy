@@ -9,48 +9,51 @@ from kivy.base import Builder
 
 LoadDialogString = """
 <LoadDialog>:
-    BoxLayout:
+    RelativeLayout:
         size: root.size
+        pos: root.pos
         orientation: "vertical"
-
+        
         TextInput:
             id: text_input
-            pos_hint: {"x": 0.1, "y": 0.9}
-            size_hint: (0.9, 0.05)
-
-        FileChooserListView:
-            id: filechooser
-            on_selection: text_input.text = self.selection and self.selection[0] or ''
-            path: root.path
-            pos_hint: {"x": 0.1, "y": 0.8}
-            size_hint: (0.9, 0.6)
+            pos_hint: root.text_input_pos
+            size_hint: root.text_input_size
+        
+        RelativeLayout:
+            size_hint: root.filechooser_size
+            pos_hint: root.filechooser_pos
             
-            
+            BoxLayout: 
+                FileChooserListView:
+                    id: filechooser
+                    on_selection: text_input.text = self.selection and self.selection[0] or ''
+                    path: root.path
+                
         Button:
             id: loadbutton
             text: "Load"
-            pos_hint: {"x": 0.9, "y": 0.2}
-            size_hint: (0.1, 0.05)
+            pos_hint: root.button_load_pos
+            size_hint: root.button_size
             on_release: root.loadfile(filechooser.path, filechooser.selection)
             
         Button:
             id: newproject
             text: "New"
-            pos_hint: {"x": 0.5, "y": 0.2}
-            size_hint: (0.1, 0.05)
+            pos_hint: root.button_new_pos
+            size_hint: root.button_size
             on_release: root.newfile(filechooser.path)
         
         Button:
             id: cancelbutton
             text: "Cancel"
-            pos_hint: {"x": 0.1, "y": 0.2}
-            size_hint: (0.1, 0.05)
+            pos_hint: root.button_cancel_pos
+            size_hint: root.button_size
             on_release: root.cancel() 
 """
 
 Builder.load_string(LoadDialogString)
 
-class LoadDialog(RelativeLayout):
+class LoadDialog(FloatLayout):
     path = ObjectProperty(None)
     cancel = ObjectProperty(None)
     loadfile = ObjectProperty(None)
@@ -62,6 +65,14 @@ class LoadDialog(RelativeLayout):
         self.cancel = kwargs["cancel"]
         self.newfile = kwargs["new"]
         self.path = str(self._get_first_existed_dir(default_path))
+        self.button_size = (0.1, 0.05)
+        self.button_load_pos = {"x": 0.9, "y": 0.1}
+        self.button_new_pos = {"x": 0.5, "y": 0.1}
+        self.button_cancel_pos = {"x": 0.05, "y": 0.1}
+        self.filechooser_pos = {"x": 0.05, "top": 0.8}
+        self.filechooser_size = (0.9, 0.6)
+        self.text_input_pos = {"x": 0.05, "y": 0.9}
+        self.text_input_size = (0.9, 0.05)
         super().__init__()
 
     def _get_first_existed_dir(self, dir):
