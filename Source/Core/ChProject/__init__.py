@@ -16,7 +16,7 @@ class ChProject(data):
         self._is_updating = False
 
 
-    def update(self):
+    def update(self, *kvargs):
         if not self._is_updating:
             self._is_updating = True
             for compound in self.compounds:

@@ -5,6 +5,7 @@ from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 from pathlib import Path
 from kivy.base import Builder
+from Source.LoadWindow.NewProjectWindow import CreateDialog
 
 
 LoadDialogString = """
@@ -41,7 +42,7 @@ LoadDialogString = """
             text: "New"
             pos_hint: root.button_new_pos
             size_hint: root.button_size
-            on_release: root.newfile(filechooser.path)
+            on_release: root.newfileWindow(filechooser.path)
         
         Button:
             id: cancelbutton
@@ -81,6 +82,22 @@ class LoadDialog(FloatLayout):
         else:
             return dir
 
+    def newfileWindow(self, path):
+        content = CreateDialog(path=path,
+                             create=self.create_project,
+                             cancel=self.return_tocurrentWindow)
+        self._project_creater = Popup(title="Create Project",
+                                     content=content,
+                                     size_hint=(0.6, 0.6),
+                                     pos_hint={"x": 0.25, "top": 0.7})
+        self._project_creater.open()
+
+    def create_project(self, *kvargs):
+        self.newfile(*kvargs)
+        self._project_creater.dismiss()
+
+    def return_tocurrentWindow(self):
+        self._project_creater.dismiss()
 
 class TestWidget(FloatLayout):
 
