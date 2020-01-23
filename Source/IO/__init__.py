@@ -182,7 +182,8 @@ class data():
 
         return result_dic
 
-    def _load_json(self, file: pathlib.Path)->  Union[list, dict]:
+    @staticmethod
+    def _load_json(file: pathlib.Path)->  Union[list, dict]:
         return json.load(open(file, "r"))
 
     def _save_json(self, file: pathlib.Path, data: dict):
@@ -205,26 +206,46 @@ class hash_table():
     _hash_tables: list
     _hash_links: list
     _init: bool
+    _updating: bool
 
     def __init__(self, parent):
         self._hash_links = parent
         self._hash_tables = parent.get_hash()
         self._init = True
+        self._updating = False
+        self._root_part_of_hash = parent.directory
 
     def get_by_hash(self, input_hash):
+        if not self._updating:
+            for i in range(len(self._hash_tables)):
+                if input_hash == self._hash_tables[i]:
+                    return self._hash_links[i]
+        else:
+            print(" Try later")
+
+    def get_index_by_hash(self, input_hash):
         for i in range(len(self._hash_tables)):
             if input_hash == self._hash_tables[i]:
-                return self._hash_links[i]
+                return i
 
-    def load_add_item(self, item):
+    def add_item(self, item):
         self._hash_tables.append(item.get_hash())
         self._hash_links.append(item)
+
+    def update_hash(self):
+        self._updating = True
+        temporary_hash = self._hash_links[0].directory
+        if temporary_hash != self._root_part_of_hash:
+            self._root_part_of_hash = temporary_hash
+        for i in range(1, len(self._hash_links)):
+            temporary_hash = self._hash_tables[i].get_hash()
+            if temporary_hash != self._hash_links[i].get_hash():
+                self._hash_tables[i] = temporary_hash
+        self._updating = False
 
     def next_hash(self):
         for _hash in self._hash_tables:
             yield _hash
-
-    
 
     @staticmethod
     def load_from_list(parent, input_list):
@@ -233,3 +254,13 @@ class hash_table():
         obj._hash_tables.extend(input_list)
         return obj
 
+    def convert_in_dictionary(self):
+        result = dict()
+        result.update({"_hash_tables": self._hash_tables})
+        result.update({"_root_part_of_hash": self._root_part_of_hash})
+        return result
+
+    def del_by_hash(self, input_hash):
+        index = self.get_index_by_hash(input_hash)
+        self._hash_tables.remove(self._hash_tables[index])
+        self._hash_links.remove(self._hash_links[index])

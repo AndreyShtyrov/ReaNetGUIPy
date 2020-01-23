@@ -5,7 +5,7 @@ import shutil
 
 class ChComponent(data):
 
-    def __init__(self, file_location, name="New Component"):
+    def __init__(self, file_location, hash_table, name="New Component"):
         super().__init__(file_location, name)
         self._associated_file = None
         self.Energy = None
@@ -16,11 +16,15 @@ class ChComponent(data):
             with open(self._sgeom, "w") as input:
                 print("Please input geom here in xyz format with number of atom\n")
         self._geom: Path = self.directory / "coord.xyz"
+        hash_table.add_item(self)
+        self.hash_table = hash_table
+        self.dont_save.append("hash_table")
+        self.save()
 
 
 
     def get_hash(self):
-        return self.directory
+        return str(self.directory)
 
     def set_energy(self, energy):
         self.Energy = energy

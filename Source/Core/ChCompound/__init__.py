@@ -1,5 +1,6 @@
-from Source.IO import data
+from Source.IO import data, hash_table
 from Source.Core.ChComponent import ChComponent
+
 
 
 class rEnergy():
@@ -8,7 +9,7 @@ class rEnergy():
         self._zero = 0.0
 
 class ChCompound(data):
-    def __init__(self, file_location,  energy=0.0, name="New Substance", parent = None):
+    def __init__(self, file_location, _hash_table, energy=0.0, name="New Substance", parent = None):
         super().__init__(file_location, name)
         self.components = []
         self.Energy = energy
@@ -19,6 +20,9 @@ class ChCompound(data):
         self.lBonds = []
         self.dont_save.append("parent")
         self.short_save.extend([ChComponent])
+        _hash_table.add_item(self)
+        self.hash_table: hash_table = _hash_table
+        self.dont_save.append("hash_table")
         self.save()
 
 
@@ -27,7 +31,7 @@ class ChCompound(data):
         self.Energy = float(self.gui.Text.text)
 
     def get_hash(self):
-        self.directory
+        return str(self.directory)
 
     def get_left(self):
         for bounded in self.lBonds:

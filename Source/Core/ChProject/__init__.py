@@ -1,4 +1,4 @@
-from Source.IO import data
+from Source.IO import data, hash_table
 from Source.Core.ChCompound import ChCompound
 from Source.Core.ChCalculations import ChCalculations
 from pathlib import Path
@@ -14,12 +14,11 @@ class ChProject(data):
         self.short_save.extend([ChCompound])
         self.calculations = []
         self._is_updating = False
-
-
+        self.hash_table = hash_table(self)
 
 
     def get_hash(self):
-        return 1
+        return "#@1"
 
     def update(self, *kvargs):
         print(" update all tree of project")
@@ -34,8 +33,17 @@ class ChProject(data):
 
     def add_new_compound(self, compound_name="New Substance"):
         chc = ChCompound(self.directory, name=compound_name, parent=self)
-        self.compounds.append(chc)
+        self.compounds.append(chc, hash_table)
         return chc
+
+    @classmethod
+    def load(cls, input_file):
+        input_stream = data._load_json(input_file)
+        list_for_hash = input_stream.pop("hash_table")
+        obj = type("ChProject", (cls, ), input_stream)
+        _hash_table = hash_table.load_from_list(obj, list_for_hash)
+        obj.hash_table = _hash_table
+        return obj
 
     def save(self):
         for compound in self.compounds:

@@ -124,9 +124,6 @@ class MolFrame(RelativeLayout):
         self.pos = touch.pos
         self._update_bind_objects(touch)
 
-
-
-
     def on_touch_down(self, touch):
 
         if self.collide_point(touch.pos[0], touch.pos[1]):
@@ -195,24 +192,6 @@ class MolFrame(RelativeLayout):
         for binded_obj in self._binded_objs:
             binded_obj.update(touch)
 
-
-
-    # def hide_marks(self):
-    #     self._mark_visible = False
-    #     self._parent.remove_widget(self.lellipse)
-    #     self._parent.remove_widget(self.rellipse)
-    #
-    # def show_bonds_marks(self):
-    #     self._mark_visible = True
-    #     self._parent.add_widget(self.lellipse)
-    #     self._parent.add_widget(self.rellipse)
-    #     Clock.schedule_once(self.hide_marks, 80)
-    #
-    # def get_lbind_point(self):
-    #     return self._x , self._y + self._height / 2
-    #
-    # def get_rbind_point(self):
-    #     return self._x + self._wight, self._y + self._height / 2
 
 
 class MyApp(App):

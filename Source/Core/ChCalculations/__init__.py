@@ -5,7 +5,7 @@ import os
 class ChCalculations(data):
 
 
-    def __init__(self, file_location, name="step1"):
+    def __init__(self, file_location, hash_table, name="step1"):
         super().__init__(file_location, name)
         self.status: bool = False
         self.input_creater = None
@@ -16,10 +16,13 @@ class ChCalculations(data):
         self.post_processing = []
         self.next_step = [ChCalculations]
         self.post_processing: []
+        hash_table.add_item(self)
+        self.hash_table = hash_table
+        self.dont_save.append("hash_table")
         self.save()
 
     def get_hash(self):
-        return self.directory
+        return str(self.directory)
 
     def update(self):
         super().update()
