@@ -11,6 +11,23 @@ import time
 import zipfile
 
 
+class hash_data():
+
+    def __init__(self, input_hash):
+        path = Path(input_hash)
+        self.directory = path.parent.absolute()
+        self.name = path.name
+        self.parent = path.parent.name
+
+    def get_name(self):
+        return self.name
+
+    def get_dir(self):
+        return self.directory
+
+    def get_parent(self):
+        return self.parent
+
 
 def get_dir_tree(curr_path: pathlib.Path):
     for file in curr_path.iterdir():
@@ -60,8 +77,11 @@ def _search_file_with_template_in_name(curr_path: pathlib.Path, template: str) -
 
 class data():
 
-    def __init__(self, file_location: pathlib.Path, name="new"):
-        self.Name = self._search_aval_name(file_location, name)
+    def __init__(self, file_location: pathlib.Path, mod="new", name="new"):
+        if mod == "new":
+            self.Name = self._search_aval_name(file_location, name)
+        else:
+            self.Name = name
         self.directory = file_location / self.Name
         self.saveFileName = self.directory / (self.Name + ".json")
 
@@ -182,6 +202,15 @@ class data():
 
         return result_dic
 
+    def read_dict_by_child_name(self, child_name: str):
+        path = self.directory / self.Name / (child_name + ".json")
+        return self._load_json(path)
+
+    def load_components(self, input_dict: dict):
+        for key, vaule in input_dict.items():
+            setattr(self, vaule, key)
+
+
     @staticmethod
     def _load_json(file: pathlib.Path)->  Union[list, dict]:
         return json.load(open(file, "r"))
@@ -247,6 +276,12 @@ class hash_table():
         for _hash in self._hash_tables:
             yield _hash
 
+    def get_index_by_id(self, obj):
+        for index,  link in enumerate(self._hash_links):
+            if link is obj:
+                return index
+
+
     @staticmethod
     def load_from_list(parent, input_list):
         obj = hash_table(parent)
@@ -264,3 +299,11 @@ class hash_table():
         index = self.get_index_by_hash(input_hash)
         self._hash_tables.remove(self._hash_tables[index])
         self._hash_links.remove(self._hash_links[index])
+
+    @staticmethod
+    def load_project(path_to_file, file_name):
+        pass
+
+
+
+

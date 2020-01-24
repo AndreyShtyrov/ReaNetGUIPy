@@ -170,6 +170,9 @@ class MolFrame(RelativeLayout):
         result.update({"y": self.pos[1]})
         return result
 
+    def load(self, dict_input):
+        pass
+
     def del_float_windows(self, touch):
         for child in self.children:
             if type(child) is bubbleMenuFrame:

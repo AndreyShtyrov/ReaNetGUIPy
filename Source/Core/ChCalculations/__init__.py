@@ -5,8 +5,8 @@ import os
 class ChCalculations(data):
 
 
-    def __init__(self, file_location, hash_table, name="step1"):
-        super().__init__(file_location, name)
+    def __init__(self, file_location, hash_table, name="step1", mod="new"):
+        super().__init__(file_location, name, mod)
         self.status: bool = False
         self.input_creater = None
         self.parser = None
@@ -16,10 +16,11 @@ class ChCalculations(data):
         self.post_processing = []
         self.next_step = [ChCalculations]
         self.post_processing: []
-        hash_table.add_item(self)
         self.hash_table = hash_table
         self.dont_save.append("hash_table")
-        self.save()
+        if mod == "new":
+            hash_table.add_item(self)
+            self.save()
 
     def get_hash(self):
         return str(self.directory)
@@ -32,6 +33,13 @@ class ChCalculations(data):
         for command in self.post_processing:
             os.system(command)
 
+    @staticmethod
+    def load(file_location, name):
+        path = file_location / (name + ".json")
+        obj = ChCalculations(file_location, name, mod="load")
+        input_stream = data._load_json(path)
+        obj.load_components(input_stream)
+        return obj
 
     def push_in_next(self):
         self.decode_command()

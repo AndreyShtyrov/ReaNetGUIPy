@@ -1,6 +1,6 @@
 from Source.IO import data, hash_table
 from Source.Core.ChComponent import ChComponent
-
+from Source.CanvasSubstance.Molecule import MolFrame
 
 
 class rEnergy():
@@ -9,8 +9,8 @@ class rEnergy():
         self._zero = 0.0
 
 class ChCompound(data):
-    def __init__(self, file_location, _hash_table, energy=0.0, name="New Substance", parent = None):
-        super().__init__(file_location, name)
+    def __init__(self, file_location, _hash_table, energy=0.0, name="New Substance", parent=None, mod="new"):
+        super().__init__(file_location, name, mod)
         self.components = []
         self.Energy = energy
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -20,10 +20,11 @@ class ChCompound(data):
         self.lBonds = []
         self.dont_save.append("parent")
         self.short_save.extend([ChComponent])
-        _hash_table.add_item(self)
-        self.hash_table: hash_table = _hash_table
         self.dont_save.append("hash_table")
-        self.save()
+        self.hash_table: hash_table = _hash_table
+        if mod == "new":
+            _hash_table.add_item(self)
+            self.save()
 
 
     def update(self):
@@ -37,6 +38,7 @@ class ChCompound(data):
         for bounded in self.lBonds:
             yield bounded
 
+
     def get_right(self):
         for bounded in self.rBonds:
             yield bounded
@@ -45,7 +47,15 @@ class ChCompound(data):
         sum_Energy = 0
         for component in self.components:
             sum_Energy += component.Energy
-        self.Energy = (sum_Energy - self._zero) *627.5
+        self.Energy = (sum_Energy - self._zero) * 627.5
+
+    @staticmethod
+    def load(file_location, name):
+        path = file_location / (name + ".json")
+        obj = ChCompound(file_location, name, mod="load")
+        input_stream = data._load_json(path)
+        obj.load_components(input_stream)
+        return obj
 
 
     def setBound(self, other):
