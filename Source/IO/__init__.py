@@ -268,7 +268,7 @@ class hash_table():
     def get_index_by_hash(self, input_hash):
         for i in range(len(self._hash_tables)):
             if input_hash == self._hash_tables[i]:
-                return i
+                return self._hash_index_table[i]
 
     def add_item(self, item):
         self._hash_tables.append(item.get_hash())
