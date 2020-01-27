@@ -1,10 +1,10 @@
+from Source.Core.ChCompound import ChCompound
+from Source.Core.ChCalculations import ChCalculations
 from kivy.app import App
 # from kivy.input.provider import touch
 from Source.Bounding.Bound_pointer import Bound_pointer
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
-from Source.Core import ChCompound
-from Source.Core import ChCalculations
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 from kivy.graphics import Ellipse
@@ -12,28 +12,6 @@ from kivy.graphics import Color
 from Source.Bounding.Bound import Node
 from Source.Menu.bubble_menu import bubbleMenuFrame
 
-
-class ellipse_box(FloatLayout):
-
-    def __init__(self, x, y):
-        super(FloatLayout, self).__init__(width=10, height=10, pos=(x, y))
-
-        with self.canvas:
-            Color(0.6, 0.6, 0.6, mode='hsv')
-            self.ellipse: Ellipse = Ellipse(pos=((x, y)), size=(10, 10), Color=(1, 1, 1))
-
-
-    def make_visible(self):
-        self._parent.add_widget(self)
-
-    def hide(self):
-        self._parent.remove_widget(self)
-
-    def on_touch_down(self, touch):
-        if self.collide_point(touch.pos[0], touch.pos[1]):
-            print("touched")
-        else:
-            print("none")
 
 class MolFrame(RelativeLayout):
     def __init__(self, core_object, **kwargs):
@@ -197,14 +175,5 @@ class MolFrame(RelativeLayout):
 
 
 
-class MyApp(App):
 
-    def build(self):
-        root = Widget()
-        t_ellips = ellipse_box(200, 200)
 
-        root.add_widget(t_ellips)
-        return root
-
-if __name__ == '__main__':
-    MyApp().run()

@@ -1,6 +1,6 @@
 from Source.IO import data, hash_table
 from Source.Core.ChComponent import ChComponent
-from Source.CanvasSubstance.Molecule import MolFrame
+
 
 
 class rEnergy():
@@ -18,12 +18,13 @@ class ChCompound(data):
         self.parent = parent
         self.rBonds = []
         self.lBonds = []
+        self.hash_index = None
         self.dont_save.append("parent")
         self.short_save.extend([ChComponent])
         self.dont_save.append("hash_table")
         self.hash_table: hash_table = _hash_table
         if mod == "new":
-            _hash_table.add_item(self)
+            self.hash_index = _hash_table.add_item(self)
             self.save()
 
 

@@ -13,11 +13,16 @@ import zipfile
 
 class hash_data():
 
-    def __init__(self, input_hash):
-        path = Path(input_hash)
-        self.directory = path.parent.absolute()
+    def __init__(self, obj, obj_index, parent_index):
+        path = Path(obj.directory)
+        self.directory = parent_index
         self.name = path.name
-        self.parent = path.parent.name
+        self.parent = path.parent
+        self.type = str(type(obj))
+
+
+    def load(self, input_dir):
+        pass
 
     def get_name(self):
         return self.name
@@ -27,6 +32,8 @@ class hash_data():
 
     def get_parent(self):
         return self.parent
+
+
 
 
 def get_dir_tree(curr_path: pathlib.Path):
@@ -76,8 +83,8 @@ def _search_file_with_template_in_name(curr_path: pathlib.Path, template: str) -
     return False
 
 class data():
-
-    def __init__(self, file_location: pathlib.Path, mod="new", name="new"):
+    hash_index: int
+    def __init__(self, file_location: pathlib.Path, name="new", mod="new"):
         if mod == "new":
             self.Name = self._search_aval_name(file_location, name)
         else:
@@ -179,7 +186,7 @@ class data():
     def _convert_in_dictionary(self, name, convert_object):
         result_dic = {}
         if self._check_type_saving(convert_object):
-            return {name: str(convert_object.directory.relative_to(self.directory))}
+            return {name: convert_object.hash_index}
 
         if hasattr(convert_object, 'convert_in_dictionary'):
             return {name: convert_object.convert_in_dictionary()}
@@ -232,17 +239,23 @@ class data():
             directory.mkdir(parents=True, exist_ok=True)
 
 class hash_table():
-    _hash_tables: list
-    _hash_links: list
+    _hash_tables: list = []
+    _hash_links: list = []
     _init: bool
     _updating: bool
+    _hash_index_table: list = []
+    _next_new_avail_index: int = -1
 
     def __init__(self, parent):
-        self._hash_links = parent
-        self._hash_tables = parent.get_hash()
         self._init = True
         self._updating = False
+        self.add_item(parent)
         self._root_part_of_hash = parent.directory
+
+
+    def get_next_avail_index(self):
+        self._next_new_avail_index += 1
+        return self._next_new_avail_index
 
     def get_by_hash(self, input_hash):
         if not self._updating:
@@ -260,6 +273,9 @@ class hash_table():
     def add_item(self, item):
         self._hash_tables.append(item.get_hash())
         self._hash_links.append(item)
+        avail_index = self.get_next_avail_index()
+        self._hash_index_table.append(avail_index)
+        return avail_index
 
     def update_hash(self):
         self._updating = True
@@ -267,10 +283,15 @@ class hash_table():
         if temporary_hash != self._root_part_of_hash:
             self._root_part_of_hash = temporary_hash
         for i in range(1, len(self._hash_links)):
-            temporary_hash = self._hash_tables[i].get_hash()
-            if temporary_hash != self._hash_links[i].get_hash():
+            temporary_hash = self._hash_links[i].get_hash()
+            if temporary_hash != self._hash_tables[i]:
                 self._hash_tables[i] = temporary_hash
+        self._update_index_table()
         self._updating = False
+
+    def _update_index_table(self):
+        new_list = [item.hash_index for item in self._hash_links]
+        self._hash_index_table = new_list
 
     def next_hash(self):
         for _hash in self._hash_tables:
@@ -283,16 +304,22 @@ class hash_table():
 
 
     @staticmethod
-    def load_from_list(parent, input_list):
+    def load_from_list(parent, input_dict):
         obj = hash_table(parent)
         obj._init = False
-        obj._hash_tables.extend(input_list)
+        obj.add_item(parent)
+        obj._hash_tables.extend(input_dict["_hash_tables"])
+        obj._root_part_of_hash = input_dict["_root_part_of_hash"]
+        obj._next_new_avail_index = input_dict["_next_new_avail_index"]
+        obj._hash_index_table.extend(input_dict["_hash_index_table"])
         return obj
 
     def convert_in_dictionary(self):
         result = dict()
-        result.update({"_hash_tables": self._hash_tables})
-        result.update({"_root_part_of_hash": self._root_part_of_hash})
+        result.update({"_hash_tables": [str(x) for x in self._hash_tables]})
+        result.update({"_root_part_of_hash": str(self._root_part_of_hash)})
+        result.update({"_hash_index_table": self._hash_index_table})
+        result.update({"_next_new_avail_index": self._next_new_avail_index})
         return result
 
     def del_by_hash(self, input_hash):

@@ -7,7 +7,7 @@ from pathlib import Path
 class ChProject(data):
 
     def __init__(self, file_path, name="New Project", mod="new"):
-        super().__init__(file_path, name, mod)
+        super().__init__(file_path, name=name, mod=mod)
         self.compounds = []
         self.general_method: [ChCalculations] = []
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -16,6 +16,8 @@ class ChProject(data):
         self._is_updating = False
         if mod == "new":
             self.hash_table = hash_table(self)
+            self.hash_index = 0
+            self.save()
 
 
     def yeild_next_compounds_path(self):
@@ -28,6 +30,8 @@ class ChProject(data):
     def get_hash(self):
         return "#@1"
 
+
+
     def update(self, *kvargs):
         print(" update all tree of project")
         if not self._is_updating:
@@ -36,12 +40,13 @@ class ChProject(data):
                 compound.update()
             for calc in self.calculations:
                 calc.update()
+            self.hash_table.update_hash()
             self.save()
             self._is_updating = False
 
     def add_new_compound(self, compound_name="New Substance"):
-        chc = ChCompound(self.directory, name=compound_name, parent=self)
-        self.compounds.append(chc, hash_table)
+        chc = ChCompound(self.directory, name=compound_name, parent=self, _hash_table=self.hash_table)
+        self.compounds.append(chc)
         return chc
 
     @classmethod

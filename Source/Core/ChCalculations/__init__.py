@@ -19,7 +19,7 @@ class ChCalculations(data):
         self.hash_table = hash_table
         self.dont_save.append("hash_table")
         if mod == "new":
-            hash_table.add_item(self)
+            self.hash_index = hash_table.add_item(self)
             self.save()
 
     def get_hash(self):

@@ -19,7 +19,7 @@ class ChComponent(data):
                 with open(self._sgeom, "w") as input:
                     print("Please input geom here in xyz format with number of atom\n")
             self._geom: Path = self.directory / "coord.xyz"
-            hash_table.add_item(self)
+            self.hash_index = hash_table.add_item(self)
             self.save()
 
 
