@@ -19,8 +19,7 @@ class ChCompound(data):
         self.rBonds = []
         self.lBonds = []
         self.hash_index = None
-        self.dont_save.append("parent")
-        self.short_save.extend([ChComponent])
+        self.short_save.extend([ChComponent, "parent"])
         self.dont_save.append("hash_table")
         self.hash_table: hash_table = _hash_table
         if mod == "new":
@@ -68,7 +67,7 @@ class ChCompound(data):
     def save(self):
         self.dont_save.append('rBonds')
         self.dont_save.append('lBonds')
-        super().save()
+        super().save("ChCompound")
 
 
 

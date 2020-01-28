@@ -5,22 +5,23 @@ import os
 class ChCalculations(data):
 
 
-    def __init__(self, file_location, hash_table, name="step1", mod="new"):
+    def __init__(self, file_location, hash_table, name="step1", mod="new", parent=None):
         super().__init__(file_location, name, mod)
         self.status: bool = False
         self.input_creater = None
         self.parser = None
         self.specification = ""
         self.add_information = ""
+        self.parent = parent
         self.directory.mkdir(parents=True, exist_ok=True)
         self.post_processing = []
-        self.next_step = [ChCalculations]
+        self.next_step = [ChCalculations, "parent"]
         self.post_processing: []
         self.hash_table = hash_table
         self.dont_save.append("hash_table")
         if mod == "new":
             self.hash_index = hash_table.add_item(self)
-            self.save()
+            self.save("ChCalculations")
 
     def get_hash(self):
         return str(self.directory)
@@ -51,9 +52,9 @@ class ChCalculations(data):
     def add_next_step(self, other):
         self.next_step.append(other)
 
-
     def generate_input(self):
         if bool(self.input_creater):
             pass
         else:
             print("Script for input creating is not choosen")
+

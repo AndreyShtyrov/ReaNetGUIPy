@@ -5,12 +5,14 @@ import shutil
 
 class ChComponent(data):
 
-    def __init__(self, file_location, hash_table, name="New Component", mod="new"):
+    def __init__(self, file_location, hash_table, name="New Component", mod="new", parent=None):
         super().__init__(file_location, name, mod)
         self._associated_file = None
         self.Energy = None
+        self.parent = parent
         self.parser = None
         self.hash_table = hash_table
+        self.short_save = ["parent"]
         self.dont_save.append("hash_table")
         if mod == "new":
             self.directory.mkdir(parents=True, exist_ok=True)

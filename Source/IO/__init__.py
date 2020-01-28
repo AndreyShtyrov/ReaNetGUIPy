@@ -125,8 +125,13 @@ class data():
         except:
             return str(instance)
 
-    def save(self):
+    def save(self, type_of_object: str):
+
         rdict = self._convert_in_dictionary(self.Name, self)
+        if isinstance(rdict, list):
+            rdict = dict({"type": type_of_object, "list_of_components": rdict})
+        else:
+            rdict.update({"type": type_of_object})
         self._save_json(self.saveFileName, rdict)
 
     def rename(self, name):
@@ -183,11 +188,11 @@ class data():
             return name
 
 
-    def _convert_in_dictionary(self, name, convert_object):
+    def _convert_in_dictionary(self, name, convert_object) -> Union[list, dict]:
         result_dic = {}
-        if self._check_type_saving(convert_object):
+        if self._check_type_saving(convert_object) \
+                or self._check_attr_name_saving(name):
             return {name: convert_object.hash_index}
-
         if hasattr(convert_object, 'convert_in_dictionary'):
             return {name: convert_object.convert_in_dictionary()}
         elif hasattr(convert_object, '__dict__'):
@@ -228,15 +233,26 @@ class data():
 
     def _check_type_saving(self, obj):
         for t_obj in self.short_save:
-            if isinstance(obj, t_obj):
-                return True
+            if not isinstance(t_obj, str):
+                if isinstance(obj, t_obj):
+                    return True
         return False
+
+    def _check_attr_name_saving(self, attr_name):
+        for name in data.short_save:
+            if isinstance(name, str):
+                if attr_name == name:
+                    return True
+        return False
+
+
 
     def createdir(self, directory=None):
         if bool(directory):
             self.directory.mkdir(parents=True, exist_ok=True)
         else:
             directory.mkdir(parents=True, exist_ok=True)
+
 
 class hash_table():
     _hash_tables: list = []
@@ -251,7 +267,6 @@ class hash_table():
         self._updating = False
         self.add_item(parent)
         self._root_part_of_hash = parent.directory
-
 
     def get_next_avail_index(self):
         self._next_new_avail_index += 1
@@ -277,6 +292,16 @@ class hash_table():
         self._hash_index_table.append(avail_index)
         return avail_index
 
+    def get_by_index(self, index):
+        for i, cindex in enumerate(self._hash_index_table):
+            if cindex == index:
+                return self._hash_links[i]
+
+    def is_loaded(self, index):
+        if index < (len(self._hash_links) - 1):
+            return True
+        return False
+
     def update_hash(self):
         self._updating = True
         temporary_hash = self._hash_links[0].directory
@@ -294,13 +319,22 @@ class hash_table():
         self._hash_index_table = new_list
 
     def next_hash(self):
-        for _hash in self._hash_tables:
+        iter_hash = iter(self._hash_tables)
+        _ = next(iter_hash)
+        for _hash in iter_hash:
             yield _hash
 
     def get_index_by_id(self, obj):
         for index,  link in enumerate(self._hash_links):
             if link is obj:
                 return index
+
+    def next_index(self):
+        iter_index = iter(self._hash_index_table)
+        _ = next(iter_index)
+        for _index in iter_index:
+            yield _index
+
 
 
     @staticmethod
@@ -326,11 +360,5 @@ class hash_table():
         index = self.get_index_by_hash(input_hash)
         self._hash_tables.remove(self._hash_tables[index])
         self._hash_links.remove(self._hash_links[index])
-
-    @staticmethod
-    def load_project(path_to_file, file_name):
-        pass
-
-
 
 

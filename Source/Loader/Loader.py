@@ -21,19 +21,20 @@ class Loader():
 
     def __init__(self, file_path, file_name, main_window):
         self.project,\
-        self._hash_table = ChProject.load(file_path, file_name)
+        self.hash_table = ChProject.load(file_path, file_name)
+        self.main_window = main_window
 
+    def load_type_of_data(self):
+        pass
 
 
 
     def load(self):
-        iter_hashs = iter(self._hash_table)
-        _ = next(iter_hashs)
-        for _hash in iter_hashs:
-            hdata = hash_data(_hash)
-            inp_dir = hdata.get_dir()
-            name = hdata.get_name()
-            parent = hdata.get_parent()
+        for obj_index in self.hash_table.next_index():
+            self.hash_table.get_by_index(obj_index).get_hash()
+
+
+
 
 
 

@@ -62,7 +62,7 @@ class ChProject(data):
     def save(self):
         for compound in self.compounds:
             compound.save()
-        super().save()
+        super().save("ChProject")
 
     def load_components(self, input_dict):
         super().load_components(input_dict)
