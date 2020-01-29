@@ -36,7 +36,7 @@ class MainWidget(Widget):
         self.log = logging.getLogger("MainWindow")
 
     def new_comp(self, touch):
-        new_sub = self.project.add_new_compound()
+        new_sub = self.project.add_child()
         new_sub_frame = MolFrame(new_sub, pos=touch.pos)
         self.add_widget(new_sub_frame)
         print(" MolFrame was created")

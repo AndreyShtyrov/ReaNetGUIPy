@@ -11,7 +11,7 @@ class rEnergy():
 class ChCompound(data):
     def __init__(self, file_location, _hash_table, energy=0.0, name="New Substance", parent=None, mod="new"):
         super().__init__(file_location, name, mod)
-        self.components = []
+        self.children = []
         self.Energy = energy
         self.directory.mkdir(parents=True, exist_ok=True)
         self._zero = 0.0
@@ -45,7 +45,7 @@ class ChCompound(data):
 
     def calculate_Energy(self, previ):
         sum_Energy = 0
-        for component in self.components:
+        for component in self.children:
             sum_Energy += component.Energy
         self.Energy = (sum_Energy - self._zero) * 627.5
 
@@ -62,7 +62,8 @@ class ChCompound(data):
         self.rBonds.append(other)
         other.lBonds.append(self)
 
-
+    def get_type_indeficator(self):
+        return "ChCompound"
 
     def save(self):
         self.dont_save.append('rBonds')

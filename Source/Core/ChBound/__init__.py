@@ -6,7 +6,7 @@ import numpy as np
 class ChBound(data):
 
     def __init__(self, hash_table, lBound=None, rBound=None, mod="new", parent = None):
-        self.components = []
+        self.children = []
         self.rBonds = rBound
         self.lBonds = lBound
         self.short_save.extend("parent", "rBound", "lBound")
@@ -34,6 +34,10 @@ class ChBound(data):
         super().save("ChBound")
 
 
+    def get_type_indeficator(self):
+        return "ChBound"
+
+
 
 class ChNode(data):
 
@@ -48,3 +52,6 @@ class ChNode(data):
 
     def save(self):
         super().save("ChNode")
+
+    def get_type_indeficator(self):
+        return "ChNode"

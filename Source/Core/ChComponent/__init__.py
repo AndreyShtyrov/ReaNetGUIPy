@@ -33,7 +33,8 @@ class ChComponent(data):
         obj.load_components(input_stream)
         return obj
 
-
+    def get_type_indeficator(self):
+        return "ChComponent"
 
     def get_hash(self):
         return str(self.directory)

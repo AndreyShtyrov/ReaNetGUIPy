@@ -26,6 +26,9 @@ class ChCalculations(data):
     def get_hash(self):
         return str(self.directory)
 
+    def get_type_indeficator(self):
+        return "ChCalculations"
+
     def update(self):
         super().update()
         self.specification = self.gui.Text

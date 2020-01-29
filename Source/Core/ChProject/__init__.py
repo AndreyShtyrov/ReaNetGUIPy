@@ -8,11 +8,11 @@ class ChProject(data):
 
     def __init__(self, file_path, name="New Project", mod="new"):
         super().__init__(file_path, name=name, mod=mod)
-        self.compounds = []
+        self.children = []
         self.general_method: [ChCalculations] = []
         self.directory.mkdir(parents=True, exist_ok=True)
         self.short_save.extend([ChCompound])
-        self.calculations = []
+        self.parent = 0
         self._is_updating = False
         if mod == "new":
             self.hash_table = hash_table(self)
@@ -21,14 +21,14 @@ class ChProject(data):
 
 
     def yeild_next_compounds_path(self):
-        for item in self.compounds:
+        for item in self.children:
             path = self.directory / self.Name
             file = item
             yield path, file
 
 
     def get_hash(self):
-        return "#@1"
+        return self.directory
 
 
 
@@ -36,17 +36,15 @@ class ChProject(data):
         print(" update all tree of project")
         if not self._is_updating:
             self._is_updating = True
-            for compound in self.compounds:
+            for compound in self.children:
                 compound.update()
-            for calc in self.calculations:
-                calc.update()
             self.hash_table.update_hash()
             self.save()
             self._is_updating = False
 
-    def add_new_compound(self, compound_name="New Substance"):
+    def add_child(self, compound_name="New Substance"):
         chc = ChCompound(self.directory, name=compound_name, parent=self, _hash_table=self.hash_table)
-        self.compounds.append(chc)
+        self.children.append(chc)
         return chc
 
     @classmethod
@@ -60,20 +58,23 @@ class ChProject(data):
         return obj, _hash_table
 
     def save(self):
-        for compound in self.compounds:
+        for compound in self.children:
             compound.save()
         super().save("ChProject")
 
     def load_components(self, input_dict):
         super().load_components(input_dict)
-        for compound in self.compounds:
+        for compound in self.children:
             compound.load
+
+    def get_type_indeficator(self):
+        return "ChProject"
 
 if __name__ == '__main__':
     proj_dir = Path.cwd()
     nameproject = "new1"
     chproject = ChProject(proj_dir, nameproject)
-    chproject.add_new_compound("tN2H2")
+    chproject.add_child("tN2H2")
     chproject.save()
 
 
