@@ -258,7 +258,7 @@ class data():
         return False
 
     def _check_attr_name_saving(self, attr_name):
-        for name in data.short_save:
+        for name in self.short_save:
             if isinstance(name, str):
                 if attr_name == name:
                     return True
@@ -306,11 +306,11 @@ class hash_table():
 
     def add_item(self, item):
         avail_index = self.get_next_avail_index()
-        hash_data(item.get_hash(),
-                  avail_index,
-                  self.get_index_by_id(item.parent),
-                  item.get_type_indeficator())
-        self._hash_tables.append(hash_data)
+        _hash_data =hash_data(item.get_hash(),
+                              avail_index,
+                              item.get_type_indeficator(),
+                              self.get_index_by_id(item.parent))
+        self._hash_tables.append(_hash_data)
         self._hash_links.append(item)
         return avail_index
 
@@ -327,8 +327,8 @@ class hash_table():
     def update_hash(self):
         self._updating = True
         for i, chash_data in enumerate(self._hash_tables):
-            chash_data(self._hash_links[i].get_hash(),
-                       self._hash_links[i].parent.get_index())
+            chash_data.update(self._hash_links[i].get_hash(),
+                       self._hash_links[i].parent)
         self._updating = False
 
     def next_hash(self):
@@ -360,6 +360,7 @@ class hash_table():
 
     def convert_in_dictionary(self):
         result = dict()
+        test = self._hash_tables[0]
         result.update({"_hash_tables": [x.convert_in_dictionary() for x in self._hash_tables]})
         result.update({"_root_part_of_hash": str(self._root_part_of_hash)})
         result.update({"_next_new_avail_index": self._next_new_avail_index})
