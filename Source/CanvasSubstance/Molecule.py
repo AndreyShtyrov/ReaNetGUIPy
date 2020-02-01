@@ -1,5 +1,6 @@
 from Source.Core.ChCompound import ChCompound
 from Source.Core.ChCalculations import ChCalculations
+from Source.Core.ChBound import ChNode
 from kivy.app import App
 # from kivy.input.provider import touch
 from Source.Bounding.Bound_pointer import Bound_pointer
@@ -21,8 +22,10 @@ class MolFrame(RelativeLayout):
         self._binded_objs = []
         _rellips = (0.85, 0.5)
         _lellips = (0.05, 0.5)
-        self.rellips = Node(_rellips, froze=True)
-        self.lellips = Node(_lellips, froze=True)
+        _rellips_core = ChNode(self.core_object)
+        _lellips_core = ChNode(self.core_object)
+        self.rellips = Node(_rellips, _rellips, froze=True)
+        self.lellips = Node(_lellips, _lellips, froze=True)
 
 
         self.Name: TextInput = TextInput(text=core_object.Name,
@@ -66,6 +69,12 @@ class MolFrame(RelativeLayout):
             rnode = other.lellips
             lnode = self.rellips
         return lnode, rnode
+
+    @classmethod
+    def load_Frame(cls, config_dict, core_obj):
+        pos = (config_dict["x"], config_dict["y"])
+        obj = cls(core_obj, pos=pos)
+        return obj
 
     def is_connectable(self):
         return True

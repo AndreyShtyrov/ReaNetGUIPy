@@ -179,7 +179,6 @@ class data():
 
     def exclude_attr_from_saving(self, name):
         if name in self.dont_save:
-            self.dont_save
             return False
         return True
 

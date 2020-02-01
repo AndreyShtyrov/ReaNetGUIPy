@@ -14,13 +14,14 @@ class ChCompound(data):
         self.children = []
         self.Energy = energy
         self.directory.mkdir(parents=True, exist_ok=True)
-        self._zero = 0.0
         self.parent = parent
         self.rBonds = []
         self.lBonds = []
         self.hash_index = None
         self.short_save.extend([ChComponent, "parent"])
         self.dont_save.append("hash_table")
+        self.dont_save.append('rBonds')
+        self.dont_save.append('lBonds')
         self.hash_table: hash_table = _hash_table
         if mod == "new":
             self.hash_index = _hash_table.add_item(self)
@@ -34,21 +35,6 @@ class ChCompound(data):
     def get_hash(self):
         return str(self.directory)
 
-    def get_left(self):
-        for bounded in self.lBonds:
-            yield bounded
-
-
-    def get_right(self):
-        for bounded in self.rBonds:
-            yield bounded
-
-    def calculate_Energy(self, previ):
-        sum_Energy = 0
-        for component in self.children:
-            sum_Energy += component.Energy
-        self.Energy = (sum_Energy - self._zero) * 627.5
-
     @staticmethod
     def load(file_location, name):
         path = file_location / (name + ".json")
@@ -56,6 +42,8 @@ class ChCompound(data):
         input_stream = data._load_json(path)
         obj.load_components(input_stream)
         return obj
+
+
 
 
     def setBound(self, other):
@@ -66,8 +54,6 @@ class ChCompound(data):
         return "ChCompound"
 
     def save(self):
-        self.dont_save.append('rBonds')
-        self.dont_save.append('lBonds')
         super().save("ChCompound")
 
 

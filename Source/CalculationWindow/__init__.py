@@ -46,7 +46,7 @@ class CalculationFrame(Widget):
         new_step = ChCalculations(self.project.directory, "new_step")
         new_step.specification = "m11/cc-pvdz"
         cal_frame = MolFrame(new_step, pos=touch.pos)
-        self.project.general_method.append(ChCalculations)
+        self.project.children.append(ChCalculations)
         self.add_widget(cal_frame)
 
     def _make_menu(self, touch):

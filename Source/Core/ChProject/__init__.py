@@ -6,7 +6,7 @@ from pathlib import Path
 
 class ChProject(data):
 
-    def __init__(self, file_path, name="New Project", mod="new"):
+    def __init__(self, file_path, gui, name="New Project", mod="new"):
         super().__init__(file_path, name=name, mod=mod)
         self.children = []
         self.general_method: [ChCalculations] = []
@@ -20,16 +20,8 @@ class ChProject(data):
             self.save()
 
 
-    def yeild_next_compounds_path(self):
-        for item in self.children:
-            path = self.directory / self.Name
-            file = item
-            yield path, file
-
-
     def get_hash(self):
         return self.directory
-
 
 
     def update(self, *kvargs):
@@ -62,10 +54,6 @@ class ChProject(data):
             compound.save()
         super().save("ChProject")
 
-    def load_components(self, input_dict):
-        super().load_components(input_dict)
-        for compound in self.children:
-            compound.load
 
     def get_type_indeficator(self):
         return "ChProject"

@@ -41,17 +41,24 @@ class ChBound(data):
 
 class ChNode(data):
 
-    def __init__(self, gui, parent):
+    def __init__(self, parent, gui=None):
         self.parent = parent
+        self.gui = gui
+
+    def add_gui(self, gui):
         self.gui = gui
 
     def _convert_in_dictionary(self):
         result = dict()
-        result = {"gui": self.gui.load}
+        result = {"parent": self.parent.hash_index,
+                  "gui": self.gui.convert_in_dictionary()}
         return result
+
+
 
     def save(self):
         super().save("ChNode")
+
 
     def get_type_indeficator(self):
         return "ChNode"

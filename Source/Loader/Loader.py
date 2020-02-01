@@ -53,6 +53,13 @@ class Loader():
         elif obj_type == "ChNode":
             return ChNode
 
+    def chouse_Frame_type(self, obj_type):
+        if obj_type == "ChCompound":
+            return MolFrame
+        elif obj_type == "ChBound":
+            return Bound
+        elif obj_type == "ChNode":
+            return Node
 
     def load(self):
         old_path = Path(self.hash_table._root_part_of_hash)
@@ -65,16 +72,9 @@ class Loader():
             obj = self.chouse_constructor(chash_data.get_type()).load(input_dir, chash_data.get_name())
             parent = self.hash_table.get_by_index(chash_data.get_parent_index)
             parent.add_child(obj)
-            obj.load_gui()
-            parent.add_child_gui()
-
-
-
-
-
-
-
-
+            frame_class = self.chouse_Frame_type(obj.get_type_indeficator())
+            gui = frame_class.load_Frame(obj.gui, obj)
+            self.hash_table.get_by_index(obj.parent).addwiget(gui)
 
 
 

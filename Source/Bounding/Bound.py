@@ -19,9 +19,10 @@ Builder.load_string(lstring)
 
 class Node(FloatLayout):
 
-    def __init__(self, pos, froze=False):
+    def __init__(self, pos, core_obj, froze=False):
         dwight = 10
         dheight = 10
+        self.core_obj = core_obj
         self._active = False
         self._froze = froze
         if self._froze:
@@ -32,7 +33,9 @@ class Node(FloatLayout):
                              height=dheight,
                              pos=pos)
 
-
+    def convert_in_dictionary(self):
+        result = dict()
+        result.update({"_froze": self._froze})
 
     def on_touch_down(self, touch):
         print("execute Node.on_touch_down")
@@ -47,6 +50,11 @@ class Node(FloatLayout):
         if touch.grab_current is self and not self._froze:
             self.pos = touch.pos
             self.parent.update(touch)
+
+    @classmethod
+    def load(cls, config_dict, obj):
+        pos = (config_dict["x"], config_dict["y"])
+        return cls(pos, obj)
 
 
     def on_touch_up(self, touch):
@@ -68,6 +76,12 @@ class Node(FloatLayout):
         else:
             return False
 
+
+    def convert_in_dictionary(self):
+        result = dict()
+        result.update({"x": self.pos[0],
+                       "y": self.pos[1]})
+
 class Bound(FloatLayout):
     transparency = NumericProperty(1.0)
     color = ListProperty([0.8, 0.8, 0.8])
@@ -87,6 +101,11 @@ class Bound(FloatLayout):
         self.nodes.append(lnode)
         self.nodes.append(rnode)
         self.rebuild()
+
+    def convert_in_dictionary(self):
+        result = dict()
+        result.update({"linewidth": self.linewidth})
+        return result
 
 
     def calculate_pos_inserting(self, curr_pos):

@@ -59,13 +59,13 @@ class MainWidget(Widget):
 
     def new_project(self, path_to_dir, file_name):
         path = Path(path_to_dir)
-        self.project = ChProject(path, file_name)
+        self.project = ChProject(path, self, file_name)
         self._project_loader.dismiss()
         self.update = Clock.schedule_interval(self.project.update, 20)
 
     def load_project(self, path_to_dir, path_to_file):
         path = Path(path_to_dir)
-        self.project = ChProject(path)
+        self.project = ChProject(path, self)
         self._project_loader.dismiss()
         self.update = Clock.schedule_interval(self.project.update, 20)
 
