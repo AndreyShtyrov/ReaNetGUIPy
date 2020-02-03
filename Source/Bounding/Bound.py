@@ -126,7 +126,6 @@ class Bound(FloatLayout):
         self.nodes.insert(index, node)
         self.points.insert(index, Node.pos)
         self.add_widget(node)
-
         self.rebuild()
 
 

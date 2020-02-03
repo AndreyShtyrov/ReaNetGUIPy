@@ -360,12 +360,12 @@ class data():
         return self._load_json(path)
 
     def load_components(self, input_dict: dict):
-        for key, vaule in input_dict.items():
-            setattr(self, vaule, key)
+        for key, value in input_dict.items():
+            setattr(self, value, key)
 
 
     @staticmethod
-    def _load_json(file: pathlib.Path)->  Union[list, dict]:
+    def _load_json(file: pathlib.Path) -> Union[list, dict]:
         return json.load(open(file, "r"))
 
     def _save_json(self, file: pathlib.Path, data: dict):

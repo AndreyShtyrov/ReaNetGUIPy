@@ -14,6 +14,7 @@ from Source.LoadWindow.LoadWindow import LoadDialog
 from kivy.clock import Clock
 from Source.Menu.menu import menu
 from kivy.config import Config
+from Source.Loader.Loader import Loader
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
 class MainWidget(Widget):
@@ -70,8 +71,9 @@ class MainWidget(Widget):
 
     def load_project(self, path_to_dir, path_to_file):
         path = Path(path_to_dir)
-        self.project = ChProject(path, self)
-        self._project_loader.dismiss()
+        file_name = Path(path_to_file).name
+        Ld = Loader(path, str(file_name), self)
+        Ld.load()
         self.update = Clock.schedule_interval(self.project.update, 20)
 
     def on_touch_down(self, touch):

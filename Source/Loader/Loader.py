@@ -21,9 +21,9 @@ class ProjectObserver():
 
 class Loader():
 
-    def __init__(self, file_path : Path, file_name: str, main_window):
+    def __init__(self, file_path: Path, file_name: str, main_window):
         self.project,\
-        self.hash_table = ChProject.load(file_path, file_name)
+        self.hash_table = ChProject.load(file_path, file_name.split(".")[0])
         self.main_window = main_window
         self.rebase = False
         self.new_root = file_path
