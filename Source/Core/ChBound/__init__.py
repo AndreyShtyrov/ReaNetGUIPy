@@ -22,7 +22,6 @@ class ChBound(data):
         self.gui = gui
 
     def convert_in_dictionary(self):
-
         result = dict()
         result = {
             "parent": self.parent.hash_index,
