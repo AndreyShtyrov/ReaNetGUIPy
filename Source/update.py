@@ -2,6 +2,7 @@ import logging
 from kivy.uix.popup import Popup
 from kivy.app import App
 from pathlib import Path
+from Source.Core.ChBound import ChBound
 from kivy.uix.widget import Widget
 from Source.Bounding.Bound_pointer import Bound_pointer
 from kivy.uix.boxlayout import BoxLayout
@@ -36,7 +37,7 @@ class MainWidget(Widget):
         self.log = logging.getLogger("MainWindow")
 
     def new_comp(self, touch):
-        new_sub = self.project.add_child()
+        new_sub = self.project.new_child()
         new_sub_frame = MolFrame(new_sub, pos=touch.pos)
         self.add_widget(new_sub_frame)
         print(" MolFrame was created")
@@ -49,7 +50,11 @@ class MainWidget(Widget):
 
     def create_bound(self, pointer):
         rframe, lframe = pointer.get_pointed_objs()
-        bound = Bound(rframe, lframe)
+        chbound = ChBound(self.project,
+                         rframe.core_object,
+                         lframe.core_object)
+        bound = Bound(rframe, lframe, chbound)
+        self.project.add_child(chbound)
         self.remove_widget(pointer)
         self.add_widget(bound)
 

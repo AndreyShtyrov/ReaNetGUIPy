@@ -2,6 +2,7 @@ from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
         BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
+from Source.Core.ChBound import ChNode
 from Source.Menu.bubble_menu import bubbleMenuFrame
 import numpy as np
 
@@ -19,10 +20,10 @@ Builder.load_string(lstring)
 
 class Node(FloatLayout):
 
-    def __init__(self, pos, core_obj, froze=False):
+    def __init__(self, pos, core_object, froze=False):
         dwight = 10
         dheight = 10
-        self.core_obj = core_obj
+        self.core_object = core_object
         self._active = False
         self._froze = froze
         if self._froze:
@@ -93,13 +94,14 @@ class Bound(FloatLayout):
     nodes = ListProperty()
     linewidth = NumericProperty(1.0)
 
-    def __init__(self, rframe, lframe):
+    def __init__(self, rframe, lframe, core_object):
         super().__init__()
         self._radius = 10
         self._limit_range = 15
         lnode, rnode = rframe.bind(lframe, self)
         self.nodes.append(lnode)
         self.nodes.append(rnode)
+        self.core_objectect = core_object
         self.rebuild()
 
     def convert_in_dictionary(self):
@@ -116,11 +118,15 @@ class Bound(FloatLayout):
 
     def add_new_node(self, touch):
         index = self.calculate_pos_inserting(touch.pos)
-        node = Node(touch.pos)
+        chnode = ChNode(self.core_objectect)
+        node = Node(touch.pos, chnode)
+        self.core_objectect.add_child(chnode)
         x = node.get_pos()[0]
+        chnode.add_gui(node)
         self.nodes.insert(index, node)
         self.points.insert(index, Node.pos)
         self.add_widget(node)
+
         self.rebuild()
 
 

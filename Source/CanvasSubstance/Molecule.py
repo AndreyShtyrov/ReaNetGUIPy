@@ -23,9 +23,13 @@ class MolFrame(RelativeLayout):
         _rellips = (0.85, 0.5)
         _lellips = (0.05, 0.5)
         _rellips_core = ChNode(self.core_object)
+        core_object.add_child(_rellips_core)
         _lellips_core = ChNode(self.core_object)
+        core_object.add_child(_lellips_core)
         self.rellips = Node(_rellips, _rellips, froze=True)
         self.lellips = Node(_lellips, _lellips, froze=True)
+        _rellips_core.add_gui(self.rellips)
+        _lellips_core.add_gui(self.lellips)
 
 
         self.Name: TextInput = TextInput(text=core_object.Name,
@@ -55,6 +59,7 @@ class MolFrame(RelativeLayout):
         self.add_widget(self.Text)
         self.add_widget(self.Name)
         self.core_object.save()
+
 
     def add_binded_objs(self, binded_obj):
         self._binded_objs.append(binded_obj)

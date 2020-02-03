@@ -11,6 +11,7 @@ import time
 import zipfile
 
 
+
 class hash_data():
 
     def __init__(self, obj_hash ,obj_index, obj_type, parent_index):
@@ -52,6 +53,106 @@ class hash_data():
         self.hash = str(obj_hash)
         if not parent_index:
             self.parent_index = parent_index
+
+
+class hash_table():
+    _hash_tables: [hash_data] = []
+    _hash_links: list = []
+    _init: bool
+    _updating: bool
+
+    def __init__(self, parent):
+        self._init = True
+        self._updating = False
+        self._next_new_avail_index = -1
+        self.add_item(parent)
+        self._root_part_of_hash = parent.directory
+
+    def get_next_avail_index(self):
+        self._next_new_avail_index += 1
+        return self._next_new_avail_index
+
+    def get_by_hash(self, input_hash):
+        if not self._updating:
+            for i, chash_data in enumerate(self._hash_tables):
+                if input_hash == chash_data.get_hash():
+                    return self._hash_links[i]
+        else:
+            print(" Try later")
+
+    def get_index_by_hash(self, input_hash):
+        for chash_data in self._hash_tables:
+            t_index = chash_data.get_index()
+            if input_hash == t_index:
+                return t_index
+
+    def add_item(self, item):
+        avail_index = self.get_next_avail_index()
+        _hash_data =hash_data(item.get_hash(),
+                              avail_index,
+                              item.get_type_indeficator(),
+                              self.get_index_by_id(item.parent))
+        self._hash_tables.append(_hash_data)
+        self._hash_links.append(item)
+        return avail_index
+
+    def get_by_index(self, index):
+        for i, chash_data in enumerate(self._hash_tables):
+            if index == chash_data.get_index():
+                return self._hash_links[i]
+
+    def is_loaded(self, index):
+        if index < (len(self._hash_links) - 1):
+            return True
+        return False
+
+    def update_hash(self):
+        self._updating = True
+        for i, chash_data in enumerate(self._hash_tables):
+            chash_data.update(self._hash_links[i].get_hash(),
+                       self._hash_links[i].parent)
+        self._updating = False
+
+    def next_hash(self):
+        iter_hash = iter(self._hash_tables)
+        _ = next(iter_hash)
+        for _hash in iter_hash:
+            yield _hash
+
+    def get_index_by_id(self, obj):
+        for index,  link in enumerate(self._hash_links):
+            if link is obj:
+                return self._hash_tables[index].get_index()
+
+    def next_index(self):
+        iter_index = iter(self._hash_tables)
+        _ = next(iter_index)
+        for chash_data in iter_index:
+            yield chash_data.get_index()
+
+    @staticmethod
+    def load_from_list(parent, input_dict):
+        obj = hash_table(parent)
+        obj._init = False
+        obj.add_item(parent)
+        obj._hash_tables.extend(map(hash_data.load, input_dict["_hash_tables"]))
+        obj._root_part_of_hash = input_dict["_root_part_of_hash"]
+        obj._next_new_avail_index = input_dict["_next_new_avail_index"]
+        return obj
+
+    def convert_in_dictionary(self):
+        result = dict()
+        test = self._hash_tables[0]
+        result.update({"_hash_tables": [x.convert_in_dictionary() for x in self._hash_tables]})
+        result.update({"_root_part_of_hash": str(self._root_part_of_hash)})
+        result.update({"_next_new_avail_index": self._next_new_avail_index})
+        return result
+
+    def del_by_hash(self, input_hash):
+        index = self.get_index_by_hash(input_hash)
+        self._hash_tables.remove(self._hash_tables[index])
+        self._hash_links.remove(self._hash_links[index])
+
 
 
 
@@ -102,7 +203,11 @@ def _search_file_with_template_in_name(curr_path: pathlib.Path, template: str) -
     return False
 
 class data():
+    children: []
     hash_index: int
+    hash_table: hash_table
+
+
     def __init__(self, file_location: pathlib.Path, name="new", mod="new"):
         if mod == "new":
             self.Name = self._search_aval_name(file_location, name)
@@ -110,17 +215,33 @@ class data():
             self.Name = name
         self.directory = file_location / self.Name
         self.saveFileName = self.directory / (self.Name + ".json")
-
         self.short_save = []
         self.dont_save: list = ['dont_save', 'saveFileName', 'directory', 'short_save']
 
 
 
+    def set_parent(self, parent):
+        self.parent = parent
+        self.update()
+
+    def add_child(self, child):
+        self.children.append(child)
+        child.set_parent(parent=self)
+
+    def find_in_children_by_index(self, index, input_dict) -> dict:
+        children = input_dict["children"]
+        for child in children:
+            if child["index"] == index:
+                return child
+
+
     def update(self):
         if hasattr(self, 'gui'):
-            new_name = self.gui.Name.text
-            if self.Name != new_name:
-                self.rename(new_name)
+            if hasattr(self.gui, "Name"):
+                new_name = self.gui.Name.text
+                if self.Name != new_name:
+                    self.rename(new_name)
+
 
 
 
@@ -210,7 +331,9 @@ class data():
         result_dic = {}
         if self._check_type_saving(convert_object) \
                 or self._check_attr_name_saving(name):
+            print(" try to save " + str(name))
             return {name: convert_object.hash_index}
+
         if hasattr(convert_object, 'convert_in_dictionary'):
             return {name: convert_object.convert_in_dictionary()}
         elif hasattr(convert_object, '__dict__'):
@@ -272,100 +395,3 @@ class data():
             directory.mkdir(parents=True, exist_ok=True)
 
 
-class hash_table():
-    _hash_tables: [hash_data] = []
-    _hash_links: list = []
-    _init: bool
-    _updating: bool
-
-    def __init__(self, parent):
-        self._init = True
-        self._updating = False
-        self._next_new_avail_index = -1
-        self.add_item(parent)
-        self._root_part_of_hash = parent.directory
-
-    def get_next_avail_index(self):
-        self._next_new_avail_index += 1
-        return self._next_new_avail_index
-
-    def get_by_hash(self, input_hash):
-        if not self._updating:
-            for i, chash_data in enumerate(self._hash_tables):
-                if input_hash == chash_data.get_hash():
-                    return self._hash_links[i]
-        else:
-            print(" Try later")
-
-    def get_index_by_hash(self, input_hash):
-        for chash_data in self._hash_tables:
-            t_index = chash_data.get_index()
-            if input_hash == t_index:
-                return t_index
-
-    def add_item(self, item):
-        avail_index = self.get_next_avail_index()
-        _hash_data =hash_data(item.get_hash(),
-                              avail_index,
-                              item.get_type_indeficator(),
-                              self.get_index_by_id(item.parent))
-        self._hash_tables.append(_hash_data)
-        self._hash_links.append(item)
-        return avail_index
-
-    def get_by_index(self, index):
-        for i, chash_data in enumerate(self._hash_table):
-            if index == chash_data.get_index():
-                return self._hash_links[i]
-
-    def is_loaded(self, index):
-        if index < (len(self._hash_links) - 1):
-            return True
-        return False
-
-    def update_hash(self):
-        self._updating = True
-        for i, chash_data in enumerate(self._hash_tables):
-            chash_data.update(self._hash_links[i].get_hash(),
-                       self._hash_links[i].parent)
-        self._updating = False
-
-    def next_hash(self):
-        iter_hash = iter(self._hash_tables)
-        _ = next(iter_hash)
-        for _hash in iter_hash:
-            yield _hash
-
-    def get_index_by_id(self, obj):
-        for index,  link in enumerate(self._hash_links):
-            if link is obj:
-                return self._hash_tables[index].get_index()
-
-    def next_index(self):
-        iter_index = iter(self._hash_tables)
-        _ = next(iter_index)
-        for chash_data in iter_index:
-            yield chash_data.get_index()
-
-    @staticmethod
-    def load_from_list(parent, input_dict):
-        obj = hash_table(parent)
-        obj._init = False
-        obj.add_item(parent)
-        obj._hash_tables.extend(map(hash_data.load, input_dict["_hash_tables"]))
-        obj._root_part_of_hash = input_dict["_root_part_of_hash"]
-        obj._next_new_avail_index = input_dict["_next_new_avail_index"]
-        return obj
-
-    def convert_in_dictionary(self):
-        result = dict()
-        test = self._hash_tables[0]
-        result.update({"_hash_tables": [x.convert_in_dictionary() for x in self._hash_tables]})
-        result.update({"_root_part_of_hash": str(self._root_part_of_hash)})
-        result.update({"_next_new_avail_index": self._next_new_avail_index})
-        return result
-
-    def del_by_hash(self, input_hash):
-        index = self.get_index_by_hash(input_hash)
-        self._hash_tables.remove(self._hash_tables[index])
-        self._hash_links.remove(self._hash_links[index])

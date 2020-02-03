@@ -1,5 +1,6 @@
 from Source.IO import data, hash_table
 from Source.Core.ChCompound import ChCompound
+from Source.Core.ChBound import ChBound
 from Source.Core.ChCalculations import ChCalculations
 from pathlib import Path
 
@@ -34,7 +35,12 @@ class ChProject(data):
             self.save()
             self._is_updating = False
 
-    def add_child(self, compound_name="New Substance"):
+    def add_child(self, child):
+        self.children.append(child)
+        child.set_parent(self)
+        child.update()
+
+    def new_child(self, compound_name="New Substance"):
         chc = ChCompound(self.directory, name=compound_name, parent=self, _hash_table=self.hash_table)
         self.children.append(chc)
         return chc
@@ -62,7 +68,7 @@ if __name__ == '__main__':
     proj_dir = Path.cwd()
     nameproject = "new1"
     chproject = ChProject(proj_dir, nameproject)
-    chproject.add_child("tN2H2")
+    chproject.new_child("tN2H2")
     chproject.save()
 
 

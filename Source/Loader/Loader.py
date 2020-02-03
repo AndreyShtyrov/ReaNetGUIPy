@@ -71,7 +71,7 @@ class Loader():
             input_dir = Path(chash_data.get_hash())
             obj = self.chouse_constructor(chash_data.get_type()).load(input_dir, chash_data.get_name())
             parent = self.hash_table.get_by_index(chash_data.get_parent_index)
-            parent.add_child(obj)
+            parent.new_child(obj)
             frame_class = self.chouse_Frame_type(obj.get_type_indeficator())
             gui = frame_class.load_Frame(obj.gui, obj)
             self.hash_table.get_by_index(obj.parent).addwiget(gui)
