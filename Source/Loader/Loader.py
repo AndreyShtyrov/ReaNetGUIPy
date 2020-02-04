@@ -6,8 +6,6 @@ from Source.Core.ChCalculations import ChCalculations
 from Source.Core.ChComponent import ChComponent
 from pathlib import Path
 from Source.Core.ChBound import ChBound, ChNode
-
-from Source.update import MainWidget
 from Source.CanvasSubstance.Molecule import MolFrame
 from Source.Bounding.Bound import Bound, Node
 
