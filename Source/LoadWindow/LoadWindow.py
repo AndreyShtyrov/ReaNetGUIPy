@@ -35,7 +35,7 @@ LoadDialogString = """
             text: "Load"
             pos_hint: root.button_load_pos
             size_hint: root.button_size
-            on_release: root.loadfile(filechooser.path, filechooser.selection)
+            on_release: root.loadfile(filechooser.selection)
             
         Button:
             id: newproject

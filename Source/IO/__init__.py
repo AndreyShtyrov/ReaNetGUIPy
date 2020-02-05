@@ -134,7 +134,6 @@ class hash_table():
     def load_from_list(parent, input_dict):
         obj = hash_table(parent)
         obj._init = False
-        obj.add_item(parent)
         obj._hash_tables.extend(map(hash_data.load, input_dict["_hash_tables"]))
         obj._root_part_of_hash = input_dict["_root_part_of_hash"]
         obj._next_new_avail_index = input_dict["_next_new_avail_index"]
@@ -317,7 +316,12 @@ class data():
                         t = int(component.name.split(name)[-1])
                     except ValueError:
                         t = component.name.split(name)[-1]
-                        t = int(t.split(".")[0])
+                        if "." in t:
+                            t = int(t.split(".")[0])
+                        try:
+                            t = int(t)
+                        except ValueError:
+                            t = value
                     if t > value:
                         value = t
         acc = value + 1
@@ -359,9 +363,36 @@ class data():
         path = self.directory / self.Name / (child_name + ".json")
         return self._load_json(path)
 
+    @staticmethod
+    def convert_dict_in_values(converted_obj):
+        if type(converted_obj) is dict:
+            result = dict()
+            for key, value in converted_obj.items():
+                result.update({key: data.convert_dict_in_values(value)})
+        elif type(converted_obj) is list:
+            result = []
+            for item in converted_obj:
+                result.append(data.convert_dict_in_values(item))
+        else:
+            print(" You try convert unsupported data in value it may be error")
+            result = converted_obj
+        return result
+
     def load_components(self, input_dict: dict):
         for key, value in input_dict.items():
-            setattr(self, value, key)
+            if type(value) is list:
+                value_list = []
+                for item in value:
+                    value_list.append(self.convert_dict_in_values(item))
+                setattr(self, key, value_list)
+            elif type(value) is dict:
+                value_dict = dict()
+                for key, item in value.items():
+                    value_dict.update({key: self.convert_dict_in_values(item)})
+                setattr(self, key, value_dict)
+            else:
+                setattr(self, key, value)
+
 
 
     @staticmethod

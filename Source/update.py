@@ -69,9 +69,9 @@ class MainWidget(Widget):
         self._project_loader.dismiss()
         self.update = Clock.schedule_interval(self.project.update, 20)
 
-    def load_project(self, path_to_dir, path_to_file):
-        path = Path(path_to_dir)
-        file_name = Path(path_to_file[0]).name
+    def load_project(self, path_to_file):
+        path = Path(path_to_file[0]).parent
+        file_name = Path(path_to_file[0]).name.split(".")[0]
         Ld = Loader(path, str(file_name), self)
         Ld.load()
         self.update = Clock.schedule_interval(self.project.update, 20)
